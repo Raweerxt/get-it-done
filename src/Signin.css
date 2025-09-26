@@ -1,0 +1,147 @@
+/* Container สำหรับทั้งหน้าจอ */
+.login-page {
+  display: flex;
+  height: 100vh; 
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* แผงด้านซ้าย: Background */
+.background-panel {
+  flex: 3; 
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-color: pink; /* สีรองพื้น */
+}
+
+/* ชื่อแอปบนแผงซ้าย */
+.app-title-bg {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white; 
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* แผงด้านขวา: Login Form */
+.login-panel {
+  flex: 2; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+.login-form-container {
+  width: 80%; 
+  max-width: 350px;
+  padding: 20px 0;
+}
+
+/* โลโก้และชื่อแอปบนฟอร์ม */
+.logo-and-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* สไตล์สำหรับรูปภาพโลโก้ */
+.app-logo {
+  width: 40px; /* กำหนดความกว้าง */
+  height: 40px; /* กำหนดความสูง */
+  border-radius: 50%; /* ทำให้เป็นวงกลม */
+  object-fit: cover; /* ครอบคลุมพื้นที่โดยไม่บิดเบี้ยว */
+  margin-right: 10px;
+  /* ลบ background-color, background, box-shadow ที่เคยเป็น placeholder ออก */
+  /* ถ้าโลโก้ของคุณมีพื้นหลังโปร่งใสอยู่แล้ว หรือเป็นวงกลมอยู่แล้ว ไม่ต้องเพิ่ม box-shadow */
+  /* ถ้าโลโก้เป็นสี่เหลี่ยมและคุณต้องการให้มันกลม ให้แน่ใจว่ามันมีพื้นที่ให้ครอบคลุม */
+}
+
+
+.app-title-fg {
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+/* ข้อความต้อนรับ */
+.login-form-container h2 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+input {
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: #f7f7f7; 
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+/* ปุ่ม Sign In */
+.sign-in-button {
+  padding: 12px;
+  background-color: #007bff; 
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.sign-in-button:hover {
+  background-color: #0056b3;
+}
+
+/* ลิงก์ Sign Up */
+.signup-link-text {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.signup-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
