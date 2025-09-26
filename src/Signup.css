@@ -1,0 +1,43 @@
+/* --- เพิ่มสไตล์สำหรับปุ่ม Sign In/Sign Up --- */
+
+.sign-in-button {
+  background-color: #4CAF50; /* สีเขียวสำหรับปุ่ม (คุณอาจเลือกสีอื่น) */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  margin-top: 10px; /* เว้นระยะห่างจาก input สุดท้าย */
+}
+
+.sign-in-button:hover {
+  background-color: #45a049; /* สีเข้มขึ้นเมื่อเมาส์ชี้ */
+  transform: translateY(-1px);
+}
+
+.sign-in-button:active {
+  transform: translateY(0);
+}
+
+
+/* --- สไตล์สำหรับลิงก์ด้านล่างฟอร์ม --- */
+
+.signup-link-text {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.signup-link {
+  color: #4CAF50; /* ใช้สีเดียวกับปุ่มเพื่อให้เข้ากัน */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
