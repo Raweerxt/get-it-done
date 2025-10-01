@@ -16,6 +16,8 @@
     position: absolute; /* สัมพันธ์กับ .settings-container */
     bottom: 50px; /* เลื่อนขึ้นจากปุ่มเล็กน้อย */
     right: 0;
+    padding-right: 35px;
+    padding-bottom: 20px;
 }
 
 /* ------------------------------------- */
@@ -41,7 +43,7 @@
     border: none;
     cursor: pointer;
     color: #666;
-    padding: 5px;
+    padding-right: 40px;
     transition: color 0.2s;
 }
 
@@ -66,7 +68,7 @@
     display: block;
     font-size: 0.9em;
     color: #333;
-    margin-bottom: 8px;
+    padding-right: 8px;
     font-weight: 500;
 }
 
