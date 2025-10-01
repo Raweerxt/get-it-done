@@ -5,7 +5,7 @@ import backgroundImage from './assets/bg.png';
 // ✅ นำเข้า SettingsButton Component จากที่ตั้งที่ถูกต้อง
 import SettingsButton from './Button/Setting'; 
 // 🛑 นำเข้า Icon ที่จำเป็นสำหรับ Footer Icons ที่เหลือ
-import { Music, Image, ListChecks, Home } from 'lucide-react'; 
+import { Music, Image, BookText, Home, Flame } from 'lucide-react'; 
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -109,8 +109,9 @@ const HomePage = () => {
 
                 {/* Right Side Icons (Navigation) */}
                 <div className="footer-icons">
-                    <button className="footer-icon-button" title="Tasks" onClick={() => handleNavClick('/tasks')}><ListChecks size={24} color="#FFF" /></button>
+                    <button className="footer-icon-button" title="Focus" onClick={() => handleNavClick('/focus')}><BookText size={24} color="#FFF" /></button>
                     <button className="footer-icon-button" title="Home" onClick={() => handleNavClick('/home')}><Home size={24} color="#FFF" /></button>
+                    <button className="footer-icon-button" title="Streak" onClick={() => handleNavClick('/streak')}><Flame size={24} color="#FFF" /></button>
                     {/* ✅ SettingsButton ถูกย้ายมาอยู่ที่นี่แล้ว */}
                     <SettingsButton /> 
                 </div>
