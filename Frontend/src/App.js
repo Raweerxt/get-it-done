@@ -9,7 +9,7 @@ import './App.css'; // ต้องแน่ใจว่า import App.css อ�
 
 // 🛑 Component สำหรับป้องกันการเข้าถึงหน้าถ้ายังไม่ได้ Login
 const ProtectedRoute = ({ children }) => {
-  // ✅ แก้ไข: ตรวจสอบ Token ใน sessionStorage
+  // ✅ ใช้ sessionStorage เพื่อไม่เก็บสถานะถาวร
   const isAuthenticated = sessionStorage.getItem('token'); 
   if (!isAuthenticated) {
     // ถ้าไม่มี Token ให้กลับไปหน้า Signin
@@ -20,11 +20,11 @@ const ProtectedRoute = ({ children }) => {
 
 // 🛑 Component สำหรับป้องกันไม่ให้เข้าหน้า Login/Signup ซ้ำซ้อน
 const AuthRoute = ({ children }) => {
-  // ✅ แก้ไข: ตรวจสอบ Token ใน sessionStorage
+  // ✅ ใช้ sessionStorage เพื่อความสอดคล้อง
   const isAuthenticated = sessionStorage.getItem('token'); 
   if (isAuthenticated) {
-    // ถ้ามี Token แล้ว ให้ไปหน้าหลัก
-    return <Navigate to="/" replace />;
+    // ถ้ามี Token แล้ว ให้ไปหน้า Home โดยอัตโนมัติ
+    return <Navigate to="/home" replace />;
   }
   return children;
 };
@@ -55,9 +55,9 @@ const App = () => {
             } 
           />
 
-          {/* Protected Route - หน้าหลัก */}
+          {/* Protected Route - Home */}
           <Route 
-            path="/" 
+            path="/home" 
             element={
               <ProtectedRoute>
                 <HomePage /> 
@@ -65,7 +65,8 @@ const App = () => {
             } 
           />
 
-          {/* Fallback Route: ถ้าไม่มี Path ตรง ให้ไปหน้า Signin */}
+          {/* Default & Fallback: ให้เข้า Signin เสมอก่อน */}
+          <Route path="/" element={<Navigate to="/signin" replace />} />
           <Route path="*" element={<Navigate to="/signin" replace />} />
           
         </Routes>
