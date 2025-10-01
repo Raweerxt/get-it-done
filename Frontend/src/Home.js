@@ -23,8 +23,8 @@ const HomePage = () => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const storedUsername = localStorage.getItem('username');
+        const token = sessionStorage.getItem('token');
+        const storedUsername = sessionStorage.getItem('username');
 
         // 🛑 ป้องกันการเข้าถึง: หากไม่มี Token หรือ Username ให้เด้งไปหน้า Sign In
         if (!token || !storedUsername) {
@@ -61,9 +61,9 @@ const HomePage = () => {
 
     // ฟังก์ชันสำหรับจัดการการออกจากระบบ
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('username'); // ลบ username ด้วย
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('username'); // ลบ username ด้วย
         navigate('/signin');
     };
     
@@ -83,6 +83,21 @@ const HomePage = () => {
                 <div className="app-quote">
                     <p>"Strive for progress,</p>
                     <p>not perfection"</p>
+                </div>
+                <div>
+                    <button 
+                        onClick={handleLogout}
+                        style={{
+                            marginLeft: 'auto',
+                            padding: '8px 14px',
+                            borderRadius: '6px',
+                            border: '1px solid #ddd',
+                            background: '#fff',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Logout
+                    </button>
                 </div>
             </header>
 

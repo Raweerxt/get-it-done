@@ -14,7 +14,7 @@ const SigninPage = () => {
 
   const navigate = useNavigate(); 
 
-  // 🛑 Logic 1: ป้องกันการเข้าหน้า Login ซ้ำ (ใช้ sessionStorage)
+  // 🛑 Logic 1: ถ้ามี token แล้ว ให้เด้งไปหน้า Home (ใช้ sessionStorage)
   useEffect(() => {
       const token = sessionStorage.getItem('token');
       if (token) {
@@ -28,7 +28,7 @@ const SigninPage = () => {
     setLoading(true);
 
     try {
-        // 🛑 Logic 2: เชื่อมต่อ Backend ที่ Port 5432
+        // 🛑 Logic 2: เชื่อมต่อ Backend ที่ Port 5000 (สอดคล้องกับ server)
         const response = await fetch('http://localhost:8000/api/auth/signin', { 
             method: 'POST',
             headers: {
