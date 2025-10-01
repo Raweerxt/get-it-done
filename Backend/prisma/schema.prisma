@@ -1,0 +1,38 @@
+// Prisma schema for GetItDone backend, mirroring existing Sequelize models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  password  String
+  createdAt DateTime  @default(now()) @map("createdAt")
+  updatedAt DateTime  @updatedAt @map("updatedAt")
+
+  sessions  sessions[]
+
+  @@map("users")
+}
+
+model sessions {
+  id               Int      @id @default(autoincrement())
+  workTimeMinutes  Int
+  sessionDate      DateTime @db.Date
+  createdAt        DateTime @default(now()) @map("createdAt")
+  updatedAt        DateTime @updatedAt @map("updatedAt")
+
+  // relation
+  userId Int
+  user   users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
