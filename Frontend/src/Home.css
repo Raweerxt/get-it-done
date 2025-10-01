@@ -94,7 +94,7 @@
     align-items: center;
     color: rgba(255, 255, 255, 0.9);
     
-    background-color: rgba(0, 0, 0, 0.1);
+    /*background-color: rgba(0, 0, 0, 0.1);*/
     backdrop-filter: blur(4px); 
     -webkit-backdrop-filter: blur(4px);
 }
@@ -110,6 +110,7 @@
     border: none;
     cursor: pointer;
     border-radius: 9999px;
+    background-color: rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
     color: inherit;
 }
