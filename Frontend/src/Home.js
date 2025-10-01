@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css'; 
 import backgroundImage from './assets/bg.png'; 
+// ✅ นำเข้า SettingsButton Component จากที่ตั้งที่ถูกต้อง
+import SettingsButton from './Button/Setting'; 
+// 🛑 นำเข้า Icon ที่จำเป็นสำหรับ Footer Icons ที่เหลือ
+import { Music, Image, BookText, Home, Flame } from 'lucide-react'; 
 
 const HomePage = () => {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
-    const [currentTime, setCurrentTime] = useState(''); // State สำหรับเก็บเวลาปัจจุบัน
+    const [currentTime, setCurrentTime] = useState(''); 
 
     // ฟังก์ชันสำหรับดึงเวลาปัจจุบันใน Time Zone ไทย
     const getThaiTime = () => {
@@ -19,31 +23,30 @@ const HomePage = () => {
             timeZone: 'Asia/Bangkok'
         }).format(now);
         
-        return thaiTime;
+        // 🛑 ปรับการแสดงผลให้แสดงเฉพาะ ชั่วโมง:นาที (HH:MM) 
+        return thaiTime.substring(0, 5);
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const storedUsername = localStorage.getItem('username');
+        const token = sessionStorage.getItem('token');
+        const storedUsername = sessionStorage.getItem('username');
 
         // 🛑 ป้องกันการเข้าถึง: หากไม่มี Token หรือ Username ให้เด้งไปหน้า Sign In
         if (!token || !storedUsername) {
-             console.warn('Authentication failed: Missing token or username.');
-             navigate('/signin'); 
-             return; // หยุดการทำงานของ useEffect
+            console.warn('Authentication failed: Missing token or username.');
+            navigate('/signin'); 
+            return; 
         }
         
-        // 1. ตั้งค่า Username ที่ได้จาก Local Storage
-        // ✅ การแก้ไข: เพิ่ม try/catch เพื่อป้องกันไม่ให้โค้ดส่วนนาฬิกาหยุดทำงานหาก username มีปัญหา
+        // 1. ตั้งค่า Username 
         try {
+            // เอาแค่คำแรกของ Username มาแสดง
             const firstWordUsername = storedUsername.split(' ')[0];
             setUserName(firstWordUsername);
         } catch (error) {
             console.error('Error processing stored username:', error);
-            // ถ้าเกิด Error ให้ใช้ค่าเริ่มต้น เพื่อให้โค้ดส่วนอื่นทำงานต่อได้
-            setUserName('Guest');
+            setUserName('User');
         }
-
 
         // 2. ตั้งค่าและเริ่ม Timer (Clock)
         setCurrentTime(getThaiTime());
@@ -52,23 +55,20 @@ const HomePage = () => {
             setCurrentTime(getThaiTime());
         }, 1000);
 
-        // Cleanup Function: ล้าง Interval เมื่อ Component ถูกยกเลิก
+        // Cleanup Function
         return () => {
             clearInterval(timerId);
         };
         
     }, [navigate]);
 
-    // ฟังก์ชันสำหรับจัดการการออกจากระบบ
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('username'); // ลบ username ด้วย
-        navigate('/signin');
+    // ฟังก์ชันสำหรับจำลองการนำทาง (เนื่องจากตอนนี้ยังไม่มีหน้าอื่น)
+    const handleNavClick = (path) => {
+        console.log(`Navigating to ${path}`);
+        // navigate(path); // เปิดใช้งานเมื่อมี path อื่นๆ เช่น /tasks
     };
-    
+
     return (
-        // ใช้ style attribute เพื่อกำหนด background-image
         <div 
             className="home-page-container"
             style={{ backgroundImage: `url(${backgroundImage})` }}
@@ -88,31 +88,32 @@ const HomePage = () => {
 
             {/* Main Content: Timer */}
             <main className="home-main-content">
-                {/* ⚠️ แสดง userName ที่ถูกตั้งค่า */}
                 <p className="welcome-text">Hello, {userName || 'User'}</p> 
                 <h1 className="homepage-title">This is Homepage Armageddon</h1>
                 
-                {/* Timer Display: แสดงเวลาไทยแบบเรียลไทม์ */}
+                {/* Timer Display */}
                 <div className="timer-display">
-                    {currentTime || '00:00:00'} 
+                    {/* 🛑 แสดงแค่ HH:MM */}
+                    {currentTime.substring(0, 5) || '00:00'} 
                 </div>
             </main>
             
             {/* Footer / Navigation Icons */}
             <footer className="home-footer">
                 
-                {/* Left Side Icons (Mock-up) */}
+                {/* Left Side Icons */}
                 <div className="footer-icons">
-                    <button className="footer-icon-button" title="Music"><svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19l12 3M9 19C5.134 19 2 15.866 2 12s3.134-7 7-7" /></svg></button>
-                    <button className="footer-icon-button" title="Image"><svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></button>
+                    <button className="footer-icon-button" title="Music" onClick={() => handleNavClick('/music')}><Music size={24} color="#FFF" /></button>
+                    <button className="footer-icon-button" title="Image" onClick={() => handleNavClick('/image')}><Image size={24} color="#FFF" /></button>
                 </div>
 
                 {/* Right Side Icons (Navigation) */}
                 <div className="footer-icons">
-                    <button className="footer-icon-button" title="Tasks"><svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-8v8m-4-8v8M12 4v.01M12 20v.01M6 20v.01M6 4v.01M18 20v.01M18 4v.01M8 4h8a2 2 0 012 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg></button>
-                    <button className="footer-icon-button" title="Home" onClick={() => {}}><svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6m-6 0h.01" /></svg></button>
-                    <button className="footer-icon-button" title="Logout" onClick={handleLogout}><svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12" /></svg></button>
-                    <button className="footer-icon-button" title="Settings" onClick={() => {}}><svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg></button>
+                    <button className="footer-icon-button" title="Focus" onClick={() => handleNavClick('/focus')}><BookText size={24} color="#FFF" /></button>
+                    <button className="footer-icon-button" title="Home" onClick={() => handleNavClick('/home')}><Home size={24} color="#FFF" /></button>
+                    <button className="footer-icon-button" title="Streak" onClick={() => handleNavClick('/streak')}><Flame size={24} color="#FFF" /></button>
+                    {/* ✅ SettingsButton ถูกย้ายมาอยู่ที่นี่แล้ว */}
+                    <SettingsButton /> 
                 </div>
             </footer>
         </div>
