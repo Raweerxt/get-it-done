@@ -46,6 +46,7 @@
 .app-branding {
     font-size: 2rem;
     font-weight: 700;
+    padding: 0 20px;
     /* 🛑 (ชิดมุมบนซ้ายแล้ว) */
 }
 
@@ -61,7 +62,7 @@
     text-align: right;
     font-size: 1.25rem;
     margin: 0;
-    padding: 0;
+    padding: 0 20px;
     font-weight: 400;
     /* 🛑 (ชิดมุมบนขวาแล้ว) */
 }
