@@ -1,20 +1,18 @@
 /* General container setup */
 .focus-page-container {
-   /* 🛑 แก้ไข: ใช้ความสูงเต็ม viewport และซ่อน scroll bar ถ้าจำเป็น */
-    height: 100vh; /* ใช้ 100% ของความสูงหน้าจอ */
+    height: 100vh; 
     min-height: 100vh;
-    width: 100vw; /* ใช้ 100% ของความกว้างหน้าจอ */
+    width: 100vw; 
     
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     
-    /* 🛑 ลด padding หรือลบออกเพื่อลดโอกาสเกิด Scroll Bar */
-    padding: 0; /* ลบ padding หลักออก */
+    padding: 0; 
     
     position: relative;
-    overflow: hidden; /* ซ่อน Scroll Bar ในกรณีที่เนื้อหาเกินเล็กน้อย */
+    overflow: hidden; 
     
     background-size: cover;
     background-position: center;
@@ -29,16 +27,13 @@
     position: absolute;
     top: 0;
     width: 100%;
-    /* 🛑 เพิ่ม padding ด้านข้างและด้านบนเท่านั้น */
     padding: 1.5rem 2rem;
     display: flex;
-    justify-content: space-between; /* ให้ชิดซ้ายและชิดขวา */
+    justify-content: space-between;
     align-items: flex-start;
     color: rgba(255, 255, 255, 0.9);
     
-    /* ลบ max-width และ margin ออกไปเพื่อให้ header ชิดขอบจริงๆ */
     max-width: 1800px;
-    /* margin: 0 auto; */
 }
 .app-branding .app-name { font-size: 1.5rem; font-weight: bold; }
 .app-quote { text-align: right; font-style: italic; font-size: 1rem; }
@@ -51,7 +46,8 @@
   justify-content: center;
   flex-grow: 1;
   text-align: center;
-  margin-top: -85px;
+  /* 🛑 FIX: ยกเนื้อหาขึ้น */
+  margin-top: -85px; 
 }
 .session-indicator { font-size: 1.2rem; margin-bottom: 0rem; opacity: 0.8; }
 
@@ -90,28 +86,89 @@
 
 /* Timer Display */
 .timer-display { display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
-.timer-digits { font-size: 8rem; font-weight: bold; line-height: 1; margin: 0 1rem; min-width: 320px; }
-.time-adjust-button {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  padding: 0.5rem;
-  transition: color 0.2s ease;
-}
-.time-adjust-button:hover:not(:disabled) { color: white; }
-.time-adjust-button:disabled { opacity: 0.2; cursor: not-allowed; }
 
-/* ✅ NEW: Break Timer UI */
+/* 🛑 FIX: ลบพื้นที่ปุ่มลูกศรออก */
+.time-adjust-left, .time-adjust-right {
+    width: 0; 
+    padding: 0;
+    margin: 0;
+}
+/* 🛑 FIX: ลบปุ่มลูกศรออกทั้งหมด */
+.time-adjust-button { display: none; }
+
+
+/* 🛑 NEW: Styling สำหรับ Input Time (HH:MM:SS) */
+.timer-input-wrapper {
+    cursor: pointer; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 400px; 
+}
+
+.time-edit-mode {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+}
+
+.time-input-field {
+    /* สไตล์เมื่ออยู่ในโหมดแก้ไข */
+    background: rgba(255, 255, 255, 0.1); 
+    border: 2px solid rgba(255, 255, 255, 0.5); 
+    border-radius: 8px;
+    color: white;
+    font-size: 8rem; 
+    font-weight: bold;
+    line-height: 1;
+    text-align: center;
+    width: 33%; 
+    padding: 0 5px;
+    margin: 0 5px;
+    outline: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    
+    /* ซ่อนลูกศรขึ้น/ลง ของ input type="number" */
+    -moz-appearance: textfield; 
+}
+.time-input-field:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
+}
+.time-input-field::-webkit-outer-spin-button,
+.time-input-field::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.timer-separator {
+    font-size: 8rem;
+    font-weight: bold;
+    line-height: 1;
+    color: white;
+    margin: 0 5px; 
+}
+
+/* ปรับ timer-digits ให้มีขนาดที่เหมาะสมสำหรับ HH:MM:SS และใช้พื้นที่เต็ม */
+.timer-digits { 
+    font-size: 8rem; 
+    font-weight: bold; 
+    line-height: 1; 
+    margin: 0; 
+    min-width: 400px; 
+    text-align: center;
+}
+
+/* Break Timer UI */
 .break-timer-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   max-width: 400px;
-  /*margin-top: -3rem; /* ดึงขึ้นมาให้ซ้อนนิดๆ */
   margin-bottom: 1rem;
-  height: 60px; /* จองพื้นที่ไว้เท่ากับปุ่ม action */
+  height: 60px;
 }
 
 .break-timer-line {
@@ -179,7 +236,7 @@
 }
 
 .break-button {
-  background-color: #4A5568; /* สีเทาเข้ม */
+  background-color: #4A5568;
   border-color: #718096;
 }
 .break-button:hover {
@@ -196,7 +253,6 @@
     align-items: center;
     color: rgba(255, 255, 255, 0.9);
     
-    /*background-color: rgba(0, 0, 0, 0.1);*/
     backdrop-filter: blur(4px); 
     -webkit-backdrop-filter: blur(4px);
 }
