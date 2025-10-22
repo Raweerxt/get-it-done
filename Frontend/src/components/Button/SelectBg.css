@@ -1,0 +1,101 @@
+/* fileName: SelectBg.css */
+
+/* ------------------------------------- */
+/* 1. Positioning the Modal (Left-Bottom)*/
+/* ------------------------------------- */
+
+.bg-selector-modal-wrapper {
+    position: absolute; /* สัมพันธ์กับ Container/ปุ่มหลักใน Footer */
+    bottom: 50px; /* เลื่อนขึ้นจากปุ่มเล็กน้อย */
+    left: 0; /* 🛑 จัดตำแหน่งไปทางซ้าย */
+    padding-left: 35px; /* 🛑 เพิ่ม Padding ให้ห่างจากขอบซ้าย */
+    padding-bottom: 20px;
+}
+
+/* ------------------------------------- */
+/* 2. Modal Styling (คล้าย settings-modal) */
+/* ------------------------------------- */
+.bg-selector-modal {
+    width: 280px; /* 🛑 ใช้ความกว้างที่เล็กลงเหมือน Settings */
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    color: #333; /* สีข้อความ */
+    
+    max-width: none; 
+    max-height: none; 
+    overflow-y: visible;
+    
+    /* 🛑 ใช้ Animation ใหม่ */
+    animation: slideInBottomLeft 0.3s ease-out;
+}
+
+/* ปุ่มปิด Modal (ใช้สไตล์เดียวกับ Setting.css) */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+/* Modal Title (ใช้สไตล์เดียวกับ Setting.css) */
+.modal-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    margin-top: 0;
+    display: block; 
+}
+
+/* 3. Grid สำหรับรูปภาพ */
+.background-grid {
+    display: grid;
+    /* 🛑 ปรับเป็น 3 คอลัมน์ */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px;
+    width: 100%;
+}
+
+.background-option {
+    width: 100%;
+    aspect-ratio: 1 / 1; 
+    background-size: cover;
+    background-position: center;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent; 
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    display: block; 
+}
+
+.background-option:hover {
+    border-color: #007bff; 
+    transform: none; 
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.background-name {
+    display: none; 
+}
+
+/* Animation */
+@keyframes slideInBottomLeft {
+    /* 🛑 มาจากซ้ายล่าง */
+    from { opacity: 0; transform: translate(-20px, 20px) scale(0.95); }
+    to { opacity: 1; transform: translate(0, 0) scale(1); }
+}

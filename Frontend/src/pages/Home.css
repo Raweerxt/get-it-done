@@ -1,0 +1,142 @@
+/* Home.css */
+
+/* --- 1. Container & Background --- */
+.home-page-container {
+    /* 🛑 แก้ไข: ใช้ความสูงเต็ม viewport และซ่อน scroll bar ถ้าจำเป็น */
+    height: 100vh; /* ใช้ 100% ของความสูงหน้าจอ */
+    min-height: 100vh;
+    width: 100vw; /* ใช้ 100% ของความกว้างหน้าจอ */
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    /* 🛑 ลด padding หรือลบออกเพื่อลดโอกาสเกิด Scroll Bar */
+    padding: 0; /* ลบ padding หลักออก */
+    
+    position: relative;
+    overflow: hidden; /* ซ่อน Scroll Bar ในกรณีที่เนื้อหาเกินเล็กน้อย */
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    color: white; 
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* --- 2. Header (ส่วน Logo และ Quote) --- */
+.home-header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    /* 🛑 เพิ่ม padding ด้านข้างและด้านบนเท่านั้น */
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between; /* ให้ชิดซ้ายและชิดขวา */
+    align-items: flex-start;
+    color: rgba(255, 255, 255, 0.9);
+    
+    /* ลบ max-width และ margin ออกไปเพื่อให้ header ชิดขอบจริงๆ */
+    max-width: 1800px;
+    /* margin: 0 auto; */
+}
+
+.app-branding {
+    font-size: 2rem;
+    font-weight: 700;
+    padding: 0 20px;
+    /* 🛑 (ชิดมุมบนซ้ายแล้ว) */
+}
+
+.app-subtitle {
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+.app-quote {
+    text-align: right;
+    font-size: 1.25rem;
+    margin: 0;
+    padding: 0 20px;
+    font-weight: 400;
+    /* 🛑 (ชิดมุมบนขวาแล้ว) */
+}
+
+.app-quote p {
+    margin: 0;
+    padding: 0;
+}
+
+/* --- 3. Main Content (ส่วน Timer) --- */
+.home-main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    color: white; 
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8); 
+}
+
+.welcome-text {
+    font-size: 1.875rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+}
+
+.homepage-title {
+    font-size: 2.25rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+.timer-display {
+    font-size: 120px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+/* --- 4. Footer (ส่วน Icon Bar) --- */
+.home-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.9);
+    
+    /*background-color: rgba(0, 0, 0, 0.1);*/
+    backdrop-filter: blur(4px); 
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.footer-icons {
+    display: flex;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.footer-icon-button {
+    padding: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 9999px;
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+    color: inherit;
+}
+
+.footer-icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}

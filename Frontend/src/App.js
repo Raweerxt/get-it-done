@@ -2,10 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Import หน้า Component ทั้งหมด - แก้ไขโดยลบนามสกุลไฟล์ออก
-import SigninPage from './Signin'; 
-import SignupPage from './Signup'; 
-import HomePage from './Home'; 
+import SigninPage from './pages/Signin/Signin'; 
+import SignupPage from './pages/Signup/Signup'; 
+import HomePage from './pages/Home'; 
 import './App.css'; // ต้องแน่ใจว่า import App.css อยู่
+import FocusPage from './pages/Focus/Focus';
 
 // 🛑 Component สำหรับป้องกันการเข้าถึงหน้าถ้ายังไม่ได้ Login
 const ProtectedRoute = ({ children }) => {
@@ -65,6 +66,18 @@ const App = () => {
             } 
           />
 
+<<<<<<< HEAD
+=======
+          <Route 
+            path="/focus" 
+            element={
+              <ProtectedRoute>
+                <FocusPage /> 
+              </ProtectedRoute>
+            } 
+          />
+
+>>>>>>> 198c3e35a0f59b3e66e6d9ee0ef476b8a9da9e9b
           {/* Default & Fallback: ให้เข้า Signin เสมอก่อน */}
           <Route path="/" element={<Navigate to="/signin" replace />} />
           <Route path="*" element={<Navigate to="/signin" replace />} />
