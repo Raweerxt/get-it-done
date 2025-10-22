@@ -1,0 +1,201 @@
+/* General container setup */
+.focus-page-container {
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative; /* ✅ เพิ่ม position relative เพื่อให้ footer ยึดตำแหน่งถูก */
+}
+
+/* Header */
+.focus-header {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.app-branding .app-name { font-size: 1.5rem; font-weight: bold; }
+.app-quote { text-align: right; font-style: italic; font-size: 1rem; }
+
+/* Main Content */
+.focus-main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  text-align: center;
+}
+.session-indicator { font-size: 1.2rem; margin-bottom: 1rem; opacity: 0.8; }
+
+/* Task Input/Display */
+.task-form, .task-display {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 1.5rem;
+}
+.task-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  font-size: 2rem;
+  text-align: center;
+  padding: 0.5rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+.task-input:focus { border-bottom-color: white; }
+.task-display {
+  font-size: 2rem;
+  font-weight: 500;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  word-break: break-word;
+}
+.edit-icon { opacity: 0.5; transition: opacity 0.2s ease; }
+.task-display:hover .edit-icon { opacity: 1; }
+
+/* Timer Display */
+.timer-display { display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
+.timer-digits { font-size: 8rem; font-weight: bold; line-height: 1; margin: 0 1rem; min-width: 320px; }
+.time-adjust-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s ease;
+}
+.time-adjust-button:hover:not(:disabled) { color: white; }
+.time-adjust-button:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* ✅ NEW: Break Timer UI */
+.break-timer-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  /*margin-top: -3rem; /* ดึงขึ้นมาให้ซ้อนนิดๆ */
+  margin-bottom: 1rem;
+  height: 60px; /* จองพื้นที่ไว้เท่ากับปุ่ม action */
+}
+
+.break-timer-line {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1rem;
+}
+
+.break-timer-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.break-timer-content span {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.skip-break-button {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.skip-break-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+
+/* Action Buttons */
+.action-buttons { display: flex; gap: 1rem; height: 60px; }
+.control-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 0 2rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(5px);
+  min-width: 150px;
+}
+.control-button:hover { background-color: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.7); }
+
+.start-button {
+  background-color: white;
+  color: #121827;
+  border: none;
+}
+.start-button:hover {
+  background-color: #e2e8f0;
+}
+
+.break-button {
+  background-color: #4A5568; /* สีเทาเข้ม */
+  border-color: #718096;
+}
+.break-button:hover {
+  background-color: #2D3748;
+}
+
+/* ✅ Footer (แก้ไขให้เหมือนหน้า Home) */
+.focus-footer {
+  position: absolute; /* ทำให้ Footer ลอยอยู่ด้านล่างสุด */
+  bottom: 0;
+  width: 100%;
+  padding: 1.5rem 2rem; /* เพิ่มระยะห่างขอบ */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.footer-icons {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.footer-icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.footer-icon-button:hover {
+  opacity: 1;
+}
+
