@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css'; 
-import backgroundImage from './assets/bg.png'; 
-import SettingsButton from './Button/Setting'; 
+import backgroundImage from '../assets/bg.png'; 
+import SettingsButton from '../components/Button/Setting'; 
 // นำเข้า Icon ที่จำเป็น (ลบ PaintBucket ออก)
 import { Music, BookText, Home, Flame } from 'lucide-react'; 
 // นำเข้า BackgroundButton Component ใหม่
-import BackgroundButton from './Button/SelectBg'; 
+import BackgroundButton from '../components/Button/SelectBg'; 
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -116,7 +116,7 @@ const HomePage = () => {
 
                 {/* Right Side Icons (Navigation) */}
                 <div className="footer-icons">
-                    <button className="footer-icon-button" title="Focus" onClick={() => handleNavClick('/focus')}><BookText size={24} color="#FFF" /></button>
+                    <button className="footer-icon-button" title="Focus" onClick={() => navigate('/focus')}><BookText size={24} color="#FFF" /></button>
                     <button className="footer-icon-button" title="Home" onClick={() => handleNavClick('/home')}><Home size={24} color="#FFF" /></button>
                     <button className="footer-icon-button" title="Streak" onClick={() => handleNavClick('/streak')}><Flame size={24} color="#FFF" /></button>
                     <SettingsButton /> 
