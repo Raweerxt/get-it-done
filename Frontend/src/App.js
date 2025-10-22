@@ -66,8 +66,6 @@ const App = () => {
             } 
           />
 
-<<<<<<< HEAD
-=======
           <Route 
             path="/focus" 
             element={
@@ -77,7 +75,6 @@ const App = () => {
             } 
           />
 
->>>>>>> 198c3e35a0f59b3e66e6d9ee0ef476b8a9da9e9b
           {/* Default & Fallback: ให้เข้า Signin เสมอก่อน */}
           <Route path="/" element={<Navigate to="/signin" replace />} />
           <Route path="*" element={<Navigate to="/signin" replace />} />
