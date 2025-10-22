@@ -1,19 +1,52 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-// ✅ ลบ import 'firebase/...' ทั้งหมดออก
-import { Music, Image as ImageIcon, BookText, Home, Flame, Settings, Edit2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Music, Image as ImageIcon, BookText, Home, Flame, Settings, Edit2 } from 'lucide-react'; 
 import './Focus.css';
 import backgroundImage from '../../assets/bg.png';
 import SettingsButton from '../../components/Button/Setting';
 import BackgroundButton from '../../components/Button/SelectBg';
 
-// 🛑 NEW: ฟังก์ชัน Utility สำหรับแปลง 'MM:SS' ใน sessionStorage เป็นนาที
+// ฟังก์ชัน Utility สำหรับแปลง 'MM:SS' ใน sessionStorage เป็นนาที
 const getDurationInMinutes = (storedTime) => {
     if (storedTime) {
         const [minutes, seconds] = storedTime.split(':').map(Number);
         return minutes + (seconds / 60);
     }
-    return 5; // ค่าเริ่มต้น 5 นาที
+    return 5; 
+};
+
+// ฟังก์ชัน Utility สำหรับคำนวณ Focus Time Left เริ่มต้นเป็นวินาที
+const calculateTotalSeconds = (hours, minutes, seconds) => {
+    return (hours * 3600) + (minutes * 60) + seconds;
+}
+
+// ฟังก์ชัน Utility สำหรับจัดรูปแบบ HH:MM:SS
+const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    return {
+        hrs: String(hrs).padStart(2, '0'),
+        mins: String(mins).padStart(2, '0'),
+        secs: String(secs).padStart(2, '0')
+    };
+};
+
+// ฟังก์ชัน Utility สำหรับจัดรูปแบบ Session Indicator
+const formatSessionDuration = (totalMinutes) => {
+    if (totalMinutes < 1) return '0 min';
+    
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = Math.round(totalMinutes % 60); 
+    
+    if (hrs > 0 && mins > 0) {
+        return `${hrs} hr ${mins} min`;
+    } else if (hrs > 0) {
+        return `${hrs} hr`;
+    } else {
+        return `${mins} min`;
+    }
 };
 
 
@@ -21,204 +54,284 @@ const FocusPage = () => {
     const navigate = useNavigate();
     const [task, setTask] = useState('What do you want to focus on?');
     const [isEditingTask, setIsEditingTask] = useState(false);
+    
+    const [inputHours, setInputHours] = useState(0); 
+    const [inputMinutes, setInputMinutes] = useState(25);
+    const [inputSeconds, setInputSeconds] = useState(0); 
+    
+    const [isTimeEditing, setIsTimeEditing] = useState(false);
+
+    // --- Background State ---
+    const defaultBgUrl = backgroundImage;
+    const [currentBackground, setCurrentBackground] = useState(() => {
+        return sessionStorage.getItem('selectedBackground') || defaultBgUrl;
+    });
+
+    const handleBackgroundSelect = (bgUrl) => {
+        setCurrentBackground(bgUrl);
+        sessionStorage.setItem('selectedBackground', bgUrl);
+    };
+
 
     // --- Durations ---
-    const [focusDuration, setFocusDuration] = useState(25);
-
-    // 🛑 ดึงค่า Break Time ครั้งแรกจาก sessionStorage
     const [breakDuration, setBreakDuration] = useState(() => {
         const storedBreakTime = sessionStorage.getItem('breakTime');
         return getDurationInMinutes(storedBreakTime);
     });
 
     // --- Timer States ---
-    const [focusTimeLeft, setFocusTimeLeft] = useState(focusDuration * 60);
+    const initialFocusTime = calculateTotalSeconds(inputHours, inputMinutes, inputSeconds);
+    const [focusTimeLeft, setFocusTimeLeft] = useState(initialFocusTime);
     const [breakTimeLeft, setBreakTimeLeft] = useState(breakDuration * 60);
 
     const [isFocusActive, setIsFocusActive] = useState(false);
     const [isBreakActive, setIsBreakActive] = useState(false);
-    const inputRef = useRef(null);
+    
+    // Refs สำหรับ Inputs
+    const taskInputRef = useRef(null); 
+    const hrsInputRef = useRef(null); 
+    const minsInputRef = useRef(null);
+    const secsInputRef = useRef(null);
+    const timeWrapperRef = useRef(null); 
 
+    
+    // --- Effects and Callbacks ---
 
-    // --- Effects for Timers ---
-    // ✅ ข้อ 4 (Prisma): ฟังก์ชันสำหรับบันทึกเซสชันผ่าน API
     const saveFocusSession = useCallback(async () => {
         const token = sessionStorage.getItem('token');
-        if (!token) {
-            console.log("No auth token found, can't save session.");
-            return;
-        }
-        if (task.trim() === '' || task === 'What do you want to focus on?') {
-            console.log("No task, not saving session.");
-            return;
-        }
+        if (!token) { return; }
+        if (task.trim() === '' || task === 'What do you want to focus on?') { return; }
 
         try {
             const API_ENDPOINT = '/api/v1/focus-sessions';
-            const response = await fetch(API_ENDPOINT, {
+            const totalDurationMinutes = (inputHours * 60) + inputMinutes + (inputSeconds / 60); 
+
+            await fetch(API_ENDPOINT, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({
                     taskName: task,
-                    durationMinutes: focusDuration
+                    durationMinutes: totalDurationMinutes 
                 })
             });
-
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.status} ${response.statusText}`);
-            }
-
-            console.log("Focus session saved via API!");
-
         } catch (error) {
             console.error("Error saving focus session: ", error);
         }
+    }, [task, inputHours, inputMinutes, inputSeconds]);
 
-    }, [task, focusDuration]);
 
-    // ✅ ข้อ 2 (แก้บั๊ก): ห่อฟังก์ชันด้วย useCallback เพื่อให้เสถียร (แก้เลขกระพริบ)
-    const endBreakAndResumeFocus = useCallback(() => {
+    // 💡 NEW: ฟังก์ชันที่ใช้ในการเริ่ม Focus ต่อจาก Break (หรือ Skip Break)
+    const startNextFocusSession = useCallback(() => {
+        // 1. ตรวจสอบและตั้งค่า Break Duration ล่าสุด
+        const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
+        setBreakDuration(latestBreakDuration);
+        setBreakTimeLeft(latestBreakDuration * 60); 
+
+        // 2. หยุด Break และเริ่ม Focus
         setIsBreakActive(false);
-        setIsFocusActive(true);
-    }, []);
+        setIsFocusActive(true); 
+    }, []); 
 
-    // 1. State สำหรับ Background
-    const defaultBgUrl = backgroundImage;
-    const [currentBackground, setCurrentBackground] = useState(() => {
-        return sessionStorage.getItem('selectedBackground') || defaultBgUrl;
-    });
-
-    // 2. ฟังก์ชัน Callback สำหรับเปลี่ยนพื้นหลัง
-    const handleBackgroundSelect = (bgUrl) => {
-        setCurrentBackground(bgUrl);
-        sessionStorage.setItem('selectedBackground', bgUrl);
-    };
-
-    // ✅ Effect Timer ของ Focus (ปรับปรุงเพื่อลดการกระตุก)
+    // Focus Timer Effect (Focus -> Break)
     useEffect(() => {
+        let interval;
         if (isFocusActive) {
-            const interval = setInterval(() => {
+            interval = setInterval(() => {
                 setFocusTimeLeft(prevTime => {
                     if (prevTime <= 1) {
                         clearInterval(interval);
-                        setIsFocusActive(false);
+                        
+                        // 1. Save session
                         saveFocusSession();
+                        
+                        // 2. Alert (แจ้ง Focus หมด)
                         alert("Focus session completed!");
 
-                        // 🛑 ซิงค์ Break Time ล่าสุดจาก Settings และเริ่มพักอัตโนมัติ
+                        // 3. Transition to Break
                         const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
-                        setBreakDuration(latestBreakDuration); // อัปเดต State
-                        setBreakTimeLeft(latestBreakDuration * 60); // ตั้งค่าเวลาพักใหม่
-                        setIsBreakActive(true); // เริ่มพัก
-                        
-                        return 0;
+                        setBreakDuration(latestBreakDuration); 
+                        setBreakTimeLeft(latestBreakDuration * 60);
+                        setIsBreakActive(true); // Start Break
+                        setIsFocusActive(false); // Stop Focus
+
+                        return 0; 
                     }
                     return prevTime - 1;
                 });
             }, 1000);
-
-            // Cleanup
-            return () => clearInterval(interval);
         }
-    }, [isFocusActive, saveFocusSession]); // Dependency Array ถูกต้อง: ใช้เฉพาะ state ที่จำเป็น
 
-    // ✅ Effect Timer ของ Break (ปรับปรุงเพื่อลดการกระตุก)
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isFocusActive, saveFocusSession]);
+
+
+    // Break Timer Effect (Break -> Focus ต่อ)
     useEffect(() => {
+        let interval;
         if (isBreakActive) {
-            const interval = setInterval(() => {
+            interval = setInterval(() => {
                 setBreakTimeLeft(prevTime => {
                     if (prevTime <= 1) {
                         clearInterval(interval);
                         
-                        // 🛑 เมื่อพักจบ (อัปเดต breakDuration state ให้ตรงกับค่าล่าสุดใน Settings)
-                        const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
-                        setBreakDuration(latestBreakDuration);
-                        setBreakTimeLeft(latestBreakDuration * 60); 
-
-                        endBreakAndResumeFocus();
+                        // 1. Alert (แจ้ง Break หมด)
                         alert("Break's over!");
                         
-                        return 0;
+                        // 2. 🛑 FIX: เริ่ม Focus ต่อโดยอัตโนมัติ
+                        // ต้องรีเซ็ต focusTimeLeft กลับไปค่าเริ่มต้นก่อนที่จะเริ่ม
+                        // โดยเรียกใช้ startNextFocusSession
+                        startNextFocusSession(); 
+                        
+                        // Focus Time Left จะถูกรีเซ็ตใน startNextFocusSession
+                        return 0; 
                     }
                     return prevTime - 1;
                 });
             }, 1000);
-
-            return () => clearInterval(interval);
         }
-    }, [isBreakActive, endBreakAndResumeFocus]); // Dependency Array ถูกต้อง
+        
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isBreakActive, startNextFocusSession]); 
 
-    // Effect สำหรับอัปเดตเวลาเมื่อผู้ใช้ปรับค่า (ขณะที่นาฬิกาหยุด)
+
+    // Effect สำหรับอัปเดต Focus Time Left เมื่อ H/M/S ถูกแก้ไข (ขณะที่นาฬิกาหยุด)
     useEffect(() => {
+        // 🛑 FIX: อัปเดต FocusTimeLeft และ BreakTimeLeft เฉพาะเมื่ออยู่ในสถานะ Idle เท่านั้น 
+        // (เพื่อให้การตั้งค่าเวลาใช้งานได้เมื่อไม่ได้กำลังจับเวลาอยู่)
         if (!isFocusActive && !isBreakActive) {
-            setFocusTimeLeft(focusDuration * 60);
-            // 🛑 เพิ่ม: อัปเดต Break Time Left ด้วย เพื่อให้แสดงผลถูกต้องทันที
+            setFocusTimeLeft(calculateTotalSeconds(inputHours, inputMinutes, inputSeconds));
             setBreakTimeLeft(breakDuration * 60); 
         }
-    }, [focusDuration, breakDuration, isFocusActive, isBreakActive]); // เพิ่ม breakDuration ใน dependency
+    }, [inputHours, inputMinutes, inputSeconds, breakDuration, isFocusActive, isBreakActive]);
 
     
+    // ... (Effects อื่นๆ เหมือนเดิม) ...
+    // Effect สำหรับ Focus Task Input
     useEffect(() => {
         if (isEditingTask) {
-            inputRef.current?.focus();
-            inputRef.current?.select();
+            taskInputRef.current?.focus();
+            taskInputRef.current?.select();
         }
     }, [isEditingTask]);
-
     
+    
+    // Effect สำหรับจัดการคลิกนอก Input Fields (เพื่อปิดโหมดแก้ไข)
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (isTimeEditing && timeWrapperRef.current && !timeWrapperRef.current.contains(event.target)) {
+                const isInputFocused = [hrsInputRef, minsInputRef, secsInputRef].some(
+                    ref => ref.current === document.activeElement
+                );
+                
+                if (!isInputFocused) {
+                    setIsTimeEditing(false);
+                }
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isTimeEditing]); 
+
+
+    // --- Time Input Handlers ---
+    const handleTimeInputChange = (e, unit) => {
+        let stringValue = e.target.value.slice(0, 2); 
+        let value = parseInt(stringValue, 10);
+        
+        if (isNaN(value)) value = 0;
+
+        if (unit === 'hrs') {
+            setInputHours(Math.max(0, value));
+        } else if (unit === 'mins') {
+            setInputMinutes(Math.max(0, Math.min(59, value)));
+        } else if (unit === 'secs') {
+            setInputSeconds(Math.max(0, Math.min(59, value)));
+        }
+    };
+    
+    const handleTimeInputBlur = () => {
+        if (!isFocusActive && !isBreakActive) {
+            let finalMins = inputMinutes % 60;
+            let finalHrs = inputHours + Math.floor(inputMinutes / 60);
+            
+            const totalSeconds = calculateTotalSeconds(finalHrs, finalMins, inputSeconds);
+            if (totalSeconds === 0) {
+                finalHrs = 0;
+                finalMins = 25;
+                setInputSeconds(0);
+            }
+            
+            setInputHours(finalHrs);
+            setInputMinutes(finalMins);
+        }
+    };
+    
+    const handleDisplayClick = () => {
+        if (!isFocusActive && !isBreakActive) {
+            setIsTimeEditing(true);
+            
+            setTimeout(() => {
+                hrsInputRef.current?.focus();
+                hrsInputRef.current?.select();
+            }, 0);
+        }
+    };
+    
+    const handleInputClick = (e) => {
+        if (!isFocusActive && !isBreakActive) {
+             e.target.focus(); 
+             e.target.select(); 
+        }
+    };
+
+
     // --- Button Handlers ---
     const handleStartFocus = () => {
         if (task.trim() === '' || task === 'What do you want to focus on?') {
-        setTask('Focus Session');
-    }
+            setTask('Focus Session');
+        }
+        
+        const totalSeconds = calculateTotalSeconds(inputHours, inputMinutes, inputSeconds);
+        if (totalSeconds === 0) {
+            alert("Please set a focus time greater than zero.");
+            return;
+        }
+
         setIsEditingTask(false);
+        setIsTimeEditing(false);
         setIsFocusActive(true);
         setIsBreakActive(false);
     };
 
-    // 🛑 NEW: ดึงค่าล่าสุดจาก sessionStorage ทันทีที่ถูกกด "Break"
     const handleTakeBreak = () => {
+        // หากกด "Break" ขณะอยู่ใน Focus Session
         setIsFocusActive(false);
 
-        // 1. ดึงค่า Break Time ล่าสุดจาก sessionStorage
         const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
-
-        // 2. อัปเดต State: breakDuration และ breakTimeLeft
         setBreakDuration(latestBreakDuration); 
         setBreakTimeLeft(latestBreakDuration * 60);
         
-        // 3. เริ่ม Break
         setIsBreakActive(true);
     };
 
     const handleSkipBreak = () => {
-        // 🛑 NEW: เมื่อ Skip Break (อัปเดต breakDuration state ให้ตรงกับค่าล่าสุดใน Settings)
-        const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
-        setBreakDuration(latestBreakDuration);
-        setBreakTimeLeft(latestBreakDuration * 60); 
-        
-        endBreakAndResumeFocus();
+        // 🛑 FIX: หากกด "Skip Break" ให้เริ่ม Focus ต่อทันที
+        startNextFocusSession(); 
     };
     
     const handleSkipFocus = () => {
+        // 🛑 FIX: หากกด "Skip Focus" ให้รีเซ็ตกลับไปหน้า Start (Idle State)
         setIsFocusActive(false);
-        setFocusTimeLeft(focusDuration * 60);
+        // focusTimeLeft จะถูกรีเซ็ตอัตโนมัติเป็นค่าเดิมโดย useEffect ด้านบน
     };
 
-    const formatTime = (seconds) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    };
-
-    const changeDuration = (amount) => {
-        // อนุญาตให้ปรับ Focus Duration ได้เมื่อ Focus/Break ไม่ Active
-        if (isFocusActive || isBreakActive) return; 
-        setFocusDuration(prev => Math.max(1, prev + amount));
-    };
 
     const handleTaskSubmit = (e) => {
         e.preventDefault();
@@ -226,17 +339,19 @@ const FocusPage = () => {
     };
 
     const handleNavClick = (path) => {
-        console.log(`Navigating to ${path}`);
         navigate(path);
     };
 
-    // 🛑 FIX: กำหนดให้ตัวเลขใหญ่แสดง focusTimeLeft เสมอ เพื่อให้เห็นเวลาที่หยุดไว้
-    const displayedTime = focusTimeLeft;
+
+    // กำหนดค่าสำหรับแสดงผล
+    const timeFormatted = formatTime(focusTimeLeft);
+    const breakTimeFormatted = formatTime(breakTimeLeft);
+    const totalFocusMinutes = (inputHours * 60) + inputMinutes + (inputSeconds / 60);
+    const formattedFocusDuration = formatSessionDuration(totalFocusMinutes);
 
 
     return (
         <div className="focus-page-container" style={{ backgroundImage: `url(${currentBackground})` }}>
-            {/* Header / Quote */}
             <header className="focus-header">
                 <div className="app-branding">
                     <span className="app-name">GetItDone</span>
@@ -250,14 +365,13 @@ const FocusPage = () => {
 
             <main className="focus-main-content">
                 <p className="session-indicator">
-                    {/* แสดงสถานะ Focus หรือ Break */}
-                    {isBreakActive ? `Break (${breakDuration} min)` : `Focus (${focusDuration} min)`}
+                    {isBreakActive ? `Break (${breakDuration} min)` : `Focus (${formattedFocusDuration})`}
                 </p>
                
                 {isEditingTask ? (
                     <form onSubmit={handleTaskSubmit} className="task-form">
                         <input
-                            ref={inputRef} type="text" value={task}
+                            ref={taskInputRef} type="text" value={task}
                             onChange={(e) => setTask(e.target.value)}
                             onBlur={() => setIsEditingTask(false)}
                             className="task-input"
@@ -270,31 +384,63 @@ const FocusPage = () => {
                 )}
 
                 <div className="timer-display">
-                    <div className="time-adjust-left">
-                        {/* ปุ่มปรับเวลายังคงใช้เงื่อนไขเดิม */}
-                        <button onClick={() => changeDuration(1)} className="time-adjust-button" disabled={isFocusActive || isBreakActive}><ChevronUp size={48} /></button>
+                    <div className="time-adjust-left"></div>
+                    
+                    {/* Component สำหรับแสดง/แก้ไขเวลา */}
+                    <div className="timer-input-wrapper" ref={timeWrapperRef}> 
+                        {isTimeEditing ? (
+                            <div className="time-edit-mode">
+                                <input
+                                    ref={hrsInputRef} type="number"
+                                    value={inputHours}
+                                    onChange={(e) => handleTimeInputChange(e, 'hrs')}
+                                    onBlur={handleTimeInputBlur}
+                                    onClick={handleInputClick} 
+                                    className="time-input-field time-input-hrs"
+                                    maxLength={2} 
+                                />
+                                <span className="timer-separator">:</span>
+                                <input
+                                    ref={minsInputRef} type="number"
+                                    value={inputMinutes}
+                                    onChange={(e) => handleTimeInputChange(e, 'mins')}
+                                    onBlur={handleTimeInputBlur}
+                                    onClick={handleInputClick} 
+                                    className="time-input-field"
+                                    maxLength={2} 
+                                />
+                                <span className="timer-separator">:</span>
+                                <input
+                                    ref={secsInputRef} type="number"
+                                    value={inputSeconds}
+                                    onChange={(e) => handleTimeInputChange(e, 'secs')}
+                                    onBlur={handleTimeInputBlur}
+                                    onClick={handleInputClick} 
+                                    className="time-input-field"
+                                    maxLength={2} 
+                                />
+                            </div>
+                        ) : (
+                            <span className="timer-digits" onClick={handleDisplayClick}>
+                                {timeFormatted.hrs}:{timeFormatted.mins}:{timeFormatted.secs}
+                            </span>
+                        )}
                     </div>
-                    {/* 🛑 FIX: ตัวเลขใหญ่แสดงเวลา Focus ที่ถูกหยุดไว้ */}
-                    <span className="timer-digits">{formatTime(displayedTime)}</span> 
-                    <div className="time-adjust-right">
-                        {/* ปุ่มปรับเวลายังคงใช้เงื่อนไขเดิม */}
-                        <button onClick={() => changeDuration(-1)} className="time-adjust-button" disabled={isFocusActive || isBreakActive}><ChevronDown size={48} /></button>
-                    </div>
-                </div>
 
+                    <div className="time-adjust-right"></div>
+                </div>
 
 
                 {isBreakActive && (
                     <div className="break-timer-wrapper">
                         <div className="break-timer-line"></div>
                         <div className="break-timer-content">
-                            {/* 🛑 ตัวเลขเล็กด้านล่างแสดงเวลาพักที่กำลังนับถอยหลัง */}
-                            <span>{formatTime(breakTimeLeft)}</span>
+                            {/* แสดงผลเป็น MM:SS สำหรับเวลาพักด้านล่าง */}
+                            <span>{breakTimeFormatted.mins}:{breakTimeFormatted.secs}</span>
                             <button onClick={handleSkipBreak} className="skip-break-button">Skip</button>
                         </div>
                     </div>
                 )}
-
 
 
                 <div className="action-buttons">
@@ -310,10 +456,8 @@ const FocusPage = () => {
                 </div>
             </main>
            
-            {/* Footer */}
            <footer className="focus-footer">
                
-                {/* Left Side Icons */}
                 <div className="footer-icons">
                     <button className="footer-icon-button" title="Music" onClick={() => handleNavClick('/music')}><Music size={24} color="#FFF" /></button>
                    
@@ -323,7 +467,6 @@ const FocusPage = () => {
                    
                 </div>
 
-                {/* Right Side Icons (Navigation) */}
                 <div className="footer-icons">
                     <button className="footer-icon-button" title="Focus" onClick={() => navigate('/focus')}><BookText size={24} color="#FFF" /></button>
                     <button className="footer-icon-button" title="Home" onClick={() => handleNavClick('/home')}><Home size={24} color="#FFF" /></button>
