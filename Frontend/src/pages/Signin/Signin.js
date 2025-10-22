@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 import './Signin.css'; 
 // 🛑 แก้ไข Path รูปภาพ: สมมติว่า assets อยู่เหนือ Folder ของ Signin.js
-import backgroundImage from './assets/bg.png';
-import logoImage from './assets/logoGetitdone.png';
+import backgroundImage from '../../assets/bg.png';
+import logoImage from '../../assets/logoGetitdone.png';
 
 const SigninPage = () => {
   const [username, setUsername] = useState('');

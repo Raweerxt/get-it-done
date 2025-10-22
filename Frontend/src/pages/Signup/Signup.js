@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Signin.css'; // ใช้ CSS เดียวกับ Signin เพื่อความสอดคล้องของ Layout
+import './Signup.css'; // ใช้ CSS เดียวกับ Signin เพื่อความสอดคล้องของ Layout
 
 // 🛑 แก้ไข Path รูปภาพ: สมมติว่า assets อยู่เหนือ Folder ของ Signup.js
-import backgroundImage from './assets/bg.png';
-import logoImage from './assets/logoGetitdone.png';
+import backgroundImage from '../../assets/bg.png';
+import logoImage from '../../assets/logoGetitdone.png';
 
 const SignupPage = () => {
   const [username, setUsername] = useState('');
