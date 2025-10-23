@@ -26,8 +26,8 @@
     color: #333; /* สีข้อความ */
     
     max-width: none; 
-    max-height: none; 
-    overflow-y: visible;
+    max-height: 80vh; /* กำหนดความสูงสูงสุดเป็น 80% ของความสูงหน้าจอ */
+    overflow-y: auto;  /* เปิดใช้งาน Scrollbar แนวตั้ง เมื่อเนื้อหาเกิน */
     
     /* 🛑 ใช้ Animation ใหม่ */
     animation: slideInBottomLeft 0.3s ease-out;
@@ -36,14 +36,15 @@
 /* ปุ่มปิด Modal (ใช้สไตล์เดียวกับ Setting.css) */
 .close-button {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     background: none;
     border: none;
     cursor: pointer;
     color: #666;
     padding: 0;
     transition: color 0.2s;
+    z-index: 20;
 }
 
 .close-button:hover {
@@ -52,19 +53,29 @@
 
 /* Modal Title (ใช้สไตล์เดียวกับ Setting.css) */
 .modal-title {
-    font-size: 1.1em;
+font-size: 1.1em;
     font-weight: 600;
     margin-bottom: 10px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 8px;
     margin-top: 0;
     display: block; 
+    /* 🛑 สำคัญ: ทำให้ Title ไม่เลื่อนไปพร้อมกับเนื้อหา (Sticky) */
+    position: sticky; 
+    top: -15px; /* ชดเชยด้วยค่าลบของ padding-top ของ Modal */
+    background-color: white; /* ใส่พื้นหลังสีขาวเพื่อให้เนื้อหาที่อยู่ด้านล่างไม่ทับ */
+    z-index: 10; /* ให้ Title อยู่ด้านบนสุด */
+    padding-top: 15px; /* เพิ่ม padding-top ชดเชย */
+    margin-right: -20px; /* ชดเชย padding ด้านข้างของ modal */
+    padding-right: 20px;
+    margin-left: -20px;
+    padding-left: 20px;
 }
 
 /* 3. Grid สำหรับรูปภาพ */
 .background-grid {
+    margin-top: 15px; /* เพิ่มระยะห่างระหว่าง Title กับ Grid */
     display: grid;
-    /* 🛑 ปรับเป็น 3 คอลัมน์ */
     grid-template-columns: repeat(3, 1fr); 
     gap: 10px;
     width: 100%;
