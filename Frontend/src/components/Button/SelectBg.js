@@ -4,14 +4,48 @@ import './SelectBg.css';
 // 🛑 นำเข้าไอคอนสำหรับปุ่มหลัก
 import { Image, X } from 'lucide-react'; 
 
-// 🛑 สมมติว่าไฟล์รูปภาพพื้นหลังของคุณจะอยู่ใน public/assets/backgrounds/
+//  1. Import รูปภาพพื้นหลังที่ต้องการทั้งหมดจาก src/assets/background/
+import DefaultBg from '../../assets/bg.png'; 
+import AfterRainBg from '../../assets/background/AfterRain.png';
+import CloudBg from '../../assets/background/Cloud.png';
+import DamBg from '../../assets/background/Dam.png';
+import DarkCoastBg from '../../assets/background/DarkCoast.png';
+import EarthBg from '../../assets/background/Earth.png';
+import FallBg from '../../assets/background/Fall.png';
+import GrassBg from '../../assets/background/Grass.png';
+import HillBg from '../../assets/background/Hill.png';
+import LakeBg from '../../assets/background/Lake.png';
+import MountainBg from '../../assets/background/Mountain.png';
+import NasaBg from '../../assets/background/Nasa.png';
+import PastelBg from '../../assets/background/Pastel.png';
+import RainBg from '../../assets/background/Rain.png';
+import Road from '../../assets/background/Road.png';
+import SeaBg from '../../assets/background/Sea.png';
+import SkyBg from '../../assets/background/Sky.png';
+import SnowRoadBg from '../../assets/background/SnowRoad.png';
+import StarryNightBg from '../../assets/background/StarryNight.png';
+
+//  2. ปรับปรุง backgroundOptions ให้ใช้ตัวแปรที่ Import เข้ามา
 const backgroundOptions = [
-    { name: 'Default', url: '../assets/bg.png' }, 
-    { name: 'Forest', url: '/assets/backgrounds/forest-bg.jpg' },    
-    { name: 'Space', url: '/assets/backgrounds/space-bg.jpg' },      
-    { name: 'City', url: '/assets/backgrounds/city-bg.jpg' },
-    { name: 'Abstract', url: '/assets/backgrounds/abstract-bg.jpg' },
-    // ... เพิ่มรูปอื่นๆ ตามต้องการ
+    { name: 'Default', url: DefaultBg }, 
+    { name: 'After Rain', url: AfterRainBg },    
+    { name: 'Cloud', url: CloudBg },      
+    { name: 'Dam', url: DamBg },
+    { name: 'Dark Coast', url: DarkCoastBg },
+    { name: 'Earth', url: EarthBg },
+    { name: 'Fall', url: FallBg },
+    { name: 'Grass', url: GrassBg },
+    { name: 'Hill', url: HillBg },
+    { name: 'Lake', url: LakeBg },
+    { name: 'Mountain', url: MountainBg },
+    { name: 'Nasa', url: NasaBg },
+    { name: 'Pastel', url: PastelBg },
+    { name: 'Rain', url: RainBg },
+    { name: 'Road', url: Road },
+    { name: 'Sea', url: SeaBg },
+    { name: 'Sky', url: SkyBg },
+    { name: 'Snow Road', url: SnowRoadBg },
+    { name: 'Starry Night', url: StarryNightBg },
 ];
 
 const BackgroundButton = ({ onSelectBackground }) => { 
