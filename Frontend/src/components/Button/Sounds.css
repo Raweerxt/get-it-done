@@ -1,0 +1,194 @@
+/* fileName: Sounds.css */
+
+/* ------------------------------------- */
+/* 1. Positioning the Modal (Left-Bottom)*/
+/* ------------------------------------- */
+
+.sound-selector-modal-wrapper {
+    /* 🛑 จัดตำแหน่งให้อยู่ด้านซ้ายล่าง */
+    position: absolute; 
+    bottom: 50px; 
+    left: 0; 
+    padding-left: 35px; 
+    padding-bottom: 20px;
+}
+
+/* ------------------------------------- */
+/* 2. Modal Styling */
+/* ------------------------------------- */
+.sound-selector-modal {
+    width: 260px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    /* 🛑 ลบ padding-bottom ออกเพื่อไม่ให้เกิดพื้นที่ว่างใต้ Volume Control */
+    padding: 15px 15px 0 15px; 
+    display: flex;
+    flex-direction: column;
+    color: #333; 
+    
+    max-height: 80vh; 
+    overflow-y: auto;
+    
+    animation: slideInBottomLeft 0.3s ease-out; 
+}
+
+/* ปุ่มปิด Modal (X icon) */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333; 
+    padding: 0;
+    z-index: 20; 
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+/* Modal Title (Ambient Sounds) */
+.modal-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 10px;
+    /* 🛑 คืนค่าเส้นคั่นเดิม */
+    border-bottom: 2px solid #333; 
+    padding-bottom: 5px;
+    margin-top: 0;
+    display: block; 
+    
+    /* Title Sticky เมื่อ Scroll */
+    position: sticky;
+    top: -15px; 
+    background-color: white;
+    z-index: 10;
+    padding-top: 15px; 
+    
+    /* ชดเชย Padding ด้านข้างของ Modal */
+    margin-right: -15px;
+    padding-right: 15px;
+    margin-left: -15px;
+    padding-left: 15px;
+}
+
+/* 3. Grid สำหรับปุ่มเลือกเสียง */
+.sound-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 15px; 
+    width: 100%;
+    /* 🛑 เพิ่ม padding-bottom เพื่อไม่ให้รูปติดกับ Volume Control */
+    padding-bottom: 15px;
+}
+
+.sound-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 5px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    aspect-ratio: 1 / 1; 
+}
+
+.sound-option:hover {
+    border-color: #007bff; 
+    background-color: #f0f8ff; 
+}
+
+.sound-option.active {
+    border-color: #007bff; 
+    background-color: #e6f3ff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+.sound-icon {
+    font-size: 36px; 
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.sound-name {
+    font-size: 0.85em;
+    font-weight: 500;
+    color: #555;
+    text-align: center;
+}
+
+/* 🛑 Volume Control อยู่ด้านล่างสุดของ Modal (ไม่ Sticky) */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    /* เพิ่ม Margin และ Border ด้านบนเพื่อแยกจาก Grid */
+    padding: 15px 0 15px 0; /* เพิ่ม Padding ด้านบนและล่าง */
+    border-top: 1px solid #ddd; 
+    
+    /* 🛑 ทำให้ Volume Control เป็น Sticky ด้านล่างสุด */
+    position: sticky;
+    bottom: 0; /* ติดด้านล่าง */
+    background-color: white; /* ป้องกันเนื้อหาด้านบนทับ */
+    z-index: 15;
+    
+    /* ชดเชย Padding ด้านข้างของ Modal */
+    margin-right: -15px;
+    padding-right: 15px;
+    margin-left: -15px;
+    padding-left: 15px;
+}
+
+.volume-slider {
+    flex-grow: 1; 
+    -webkit-appearance: none; 
+    appearance: none;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    outline: none;
+    opacity: 0.9;
+    transition: opacity .2s;
+    cursor: pointer;
+}
+
+.volume-slider:hover {
+    opacity: 1;
+}
+
+/* สไตล์ Thumb (วงกลมที่เลื่อนได้) */
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+/* Animation for Bottom Left */
+@keyframes slideInBottomLeft {
+    from { opacity: 0; transform: translate(-20px, 20px) scale(0.95); }
+    to { opacity: 1; transform: translate(0, 0) scale(1); }
+}
