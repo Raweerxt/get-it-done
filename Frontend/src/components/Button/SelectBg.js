@@ -11,7 +11,6 @@ import CloudBg from '../../assets/background/Cloud.png';
 import DamBg from '../../assets/background/Dam.png';
 import DarkCoastBg from '../../assets/background/DarkCoast.png';
 import EarthBg from '../../assets/background/Earth.png';
-import FallBg from '../../assets/background/Fall.png';
 import GrassBg from '../../assets/background/Grass.png';
 import HillBg from '../../assets/background/Hill.png';
 import LakeBg from '../../assets/background/Lake.png';
@@ -33,7 +32,6 @@ const backgroundOptions = [
     { name: 'Dam', url: DamBg },
     { name: 'Dark Coast', url: DarkCoastBg },
     { name: 'Earth', url: EarthBg },
-    { name: 'Fall', url: FallBg },
     { name: 'Grass', url: GrassBg },
     { name: 'Hill', url: HillBg },
     { name: 'Lake', url: LakeBg },
@@ -48,42 +46,31 @@ const backgroundOptions = [
     { name: 'Starry Night', url: StarryNightBg },
 ];
 
-const BackgroundButton = ({ onSelectBackground }) => { 
-    // State สำหรับควบคุมการแสดง/ซ่อน Modal (Pop-up)
-    const [isOpen, setIsOpen] = React.useState(false); 
-    
-    // ฟังก์ชันสลับการแสดงผล Modal
-    const toggleModal = () => {
-        setIsOpen(!isOpen);
-    };
-    
+const BackgroundButton = ({ onSelectBackground, isOpen, onToggle }) => { 
+
     // ฟังก์ชันสำหรับจัดการการเลือกพื้นหลัง
     const handleSelect = (url) => {
         onSelectBackground(url);
-        setIsOpen(false); // ปิด Modal หลังเลือก
     };
 
     return (
         <React.Fragment>
-            {/* 1. ปุ่มหลัก (ปุ่มไอคอน) - ใช้คลาสเดียวกับ Settings */}
+            {/* 1. ปุ่มหลัก: ใช้ onToggle แทน toggleModal */}
             <button 
                 className="footer-icon-button" 
-                onClick={toggleModal}
+                onClick={onToggle} // 🛑 เมื่อคลิก จะเรียก onToggle ที่ส่งมาจาก Home.js
                 aria-label="Select Background"
                 title="Change Background"
             >
-                {/* 🛑 ใช้ Icon รูปภาพ */}
                 <Image size={24} color="#FFF" /> 
             </button>
 
-            {/* 2. Modal/Pop-up สำหรับ Background Selector */}
-            {isOpen && (
-                // 🛑 ใช้ Wrapper สำหรับจัดตำแหน่งซ้ายล่าง
+            {/* 2. Modal/Pop-up: แสดงผลตาม Props isOpen */}
+            {isOpen && ( // 🛑 ใช้ Props isOpen ในการแสดงผล
                 <div className="bg-selector-modal-wrapper">
                     <div className="bg-selector-modal">
-                        {/* ปุ่มปิด Modal */}
-                        <button className="close-button" onClick={toggleModal} aria-label="Close">
-                            {/* 🛑 ใช้ Icon X */}
+                        {/* ปุ่มปิด Modal: ใช้ onToggle แทน toggleModal */}
+                        <button className="close-button" onClick={onToggle} aria-label="Close">
                             <X size={20} color="#333" />
                         </button>
                         
