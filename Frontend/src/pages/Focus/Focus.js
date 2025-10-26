@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Music, Image as ImageIcon, BookText, Home, Flame, Settings, Edit2 } from 'lucide-react'; 
+import { BookText, Home, Flame, Edit2 } from 'lucide-react'; 
 import './Focus.css';
 import backgroundImage from '../../assets/bg.png';
 import SettingsButton from '../../components/Button/Setting';
 import BackgroundButton from '../../components/Button/SelectBg';
+import AmbientSoundSelector from '../../components/Button/Sounds';
 
 // ฟังก์ชัน Utility สำหรับแปลง 'MM:SS' ใน sessionStorage เป็นนาที
 const getDurationInMinutes = (storedTime) => {
@@ -54,6 +55,9 @@ const FocusPage = () => {
     const navigate = useNavigate();
     const [task, setTask] = useState('What do you want to focus on?');
     const [isEditingTask, setIsEditingTask] = useState(false);
+    
+    // 🛑 State ใหม่: ควบคุม Modal ที่กำลังเปิดอยู่ (สามารถเป็น 'background', 'sound', หรือ null)
+    const [openModal, setOpenModal] = useState(null);
     
     const [inputHours, setInputHours] = useState(0); 
     const [inputMinutes, setInputMinutes] = useState(25);
@@ -131,6 +135,17 @@ const FocusPage = () => {
         setIsBreakActive(false);
         setIsFocusActive(true); 
     }, []); 
+
+    // 🛑 ฟังก์ชันใหม่: ใช้เพื่อเปิด Modal
+    const handleOpenModal = (modalName) => {
+        // ถ้า Modal ที่กดซ้ำคืออันที่เปิดอยู่ ให้ปิดมัน
+        if (openModal === modalName) {
+            setOpenModal(null);
+        } else {
+            // เปิด Modal ใหม่
+            setOpenModal(modalName);
+        }
+    };
 
     // Focus Timer Effect (Focus -> Break)
     useEffect(() => {
@@ -458,11 +473,17 @@ const FocusPage = () => {
            
            <footer className="focus-footer">
                
-                <div className="footer-icons">
-                    <button className="footer-icon-button" title="Music" onClick={() => handleNavClick('/music')}><Music size={24} color="#FFF" /></button>
-                   
-                    <BackgroundButton
-                         onSelectBackground={handleBackgroundSelect}
+                <div className="footer-icons">                   
+                    <AmbientSoundSelector
+                        isOpen={openModal === 'sound'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
+                        onToggle={() => handleOpenModal('sound')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
+                    />
+                    
+                    {/* BackgroundButton */}
+                    <BackgroundButton 
+                        isOpen={openModal === 'background'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
+                        onToggle={() => handleOpenModal('background')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
+                        onSelectBackground={handleBackgroundSelect}
                     />
                    
                 </div>

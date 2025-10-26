@@ -5,9 +5,10 @@ import './Home.css';
 import backgroundImage from '../assets/bg.png'; 
 import SettingsButton from '../components/Button/Setting'; 
 // นำเข้า Icon ที่จำเป็น (ลบ PaintBucket ออก)
-import { Music, BookText, Home, Flame } from 'lucide-react'; 
+import { BookText, Home, Flame } from 'lucide-react'; 
 // นำเข้า BackgroundButton Component ใหม่
 import BackgroundButton from '../components/Button/SelectBg'; 
+import AmbientSoundSelector from '../components/Button/Sounds';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -19,6 +20,9 @@ const HomePage = () => {
     const [currentBackground, setCurrentBackground] = useState(() => {
         return sessionStorage.getItem('selectedBackground') || defaultBgUrl;
     }); 
+
+    // 🛑 State ใหม่: ควบคุม Modal ที่กำลังเปิดอยู่ (สามารถเป็น 'background', 'sound', หรือ null)
+    const [openModal, setOpenModal] = useState(null);
     
     // 2. ฟังก์ชัน Callback สำหรับเปลี่ยนพื้นหลัง
     const handleBackgroundSelect = (bgUrl) => {
@@ -38,6 +42,17 @@ const HomePage = () => {
         }).format(now);
         
         return thaiTime.substring(0, 5);
+    };
+
+    // 🛑 ฟังก์ชันใหม่: ใช้เพื่อเปิด Modal
+    const handleOpenModal = (modalName) => {
+        // ถ้า Modal ที่กดซ้ำคืออันที่เปิดอยู่ ให้ปิดมัน
+        if (openModal === modalName) {
+            setOpenModal(null);
+        } else {
+            // เปิด Modal ใหม่
+            setOpenModal(modalName);
+        }
     };
 
     useEffect(() => {
@@ -105,11 +120,17 @@ const HomePage = () => {
                 
                 {/* Left Side Icons */}
                 <div className="footer-icons">
-                    <button className="footer-icon-button" title="Music" onClick={() => handleNavClick('/music')}><Music size={24} color="#FFF" /></button>
+                    {/* 🛑 เปลี่ยนปุ่ม Music เดิม เป็น AmbientSoundSelector */}
+                    <AmbientSoundSelector
+                        isOpen={openModal === 'sound'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
+                        onToggle={() => handleOpenModal('sound')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
+                    />
                     
-                    {/* แทนที่ปุ่ม PaintBucket เดิม ด้วย BackgroundButton Component ใหม่ */}
+                    {/* BackgroundButton */}
                     <BackgroundButton 
-                         onSelectBackground={handleBackgroundSelect}
+                        isOpen={openModal === 'background'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
+                        onToggle={() => handleOpenModal('background')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
+                        onSelectBackground={handleBackgroundSelect}
                     />
                     
                 </div>
