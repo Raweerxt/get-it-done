@@ -1,0 +1,24 @@
+# 1. Dependency (สำคัญที่สุด)
+# ---------------------------
+# ห้ามอัปโหลดโฟลเดอร์ที่เก็บ Library ทั้งหมด
+/node_modules
+
+# 2. React (Create React App)
+# ---------------------------
+# ห้ามอัปโหลดโฟลเดอร์ที่ build เสร็จแล้ว
+/build
+
+# 3. ไฟล์ความลับ (สำคัญมาก)
+# ---------------------------
+# ห้ามอัปโหลดไฟล์ที่เก็บรหัสผ่าน, API Keys, หรือ JWT_SECRET
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 4. ไฟล์ Log และไฟล์ขยะของ OS
+# ---------------------------
+*.log
+.DS_Store
+Thumbs.db

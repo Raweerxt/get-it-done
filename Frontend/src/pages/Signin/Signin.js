@@ -29,7 +29,7 @@ const SigninPage = () => {
 
     try {
         // 🛑 Logic 2: เชื่อมต่อ Backend ที่ Port 5000 (สอดคล้องกับ server)
-        const response = await fetch('http://localhost:8000/api/auth/signin', { 
+        const response = await fetch('/api/auth/login', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
