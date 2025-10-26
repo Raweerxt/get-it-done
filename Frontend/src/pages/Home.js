@@ -1,35 +1,23 @@
-// fileName: Home.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css'; 
-import backgroundImage from '../assets/bg.png'; 
 import SettingsButton from '../components/Button/Setting'; 
-// นำเข้า Icon ที่จำเป็น (ลบ PaintBucket ออก)
 import { BookText, Home, Flame } from 'lucide-react'; 
-// นำเข้า BackgroundButton Component ใหม่
-import BackgroundButton from '../components/Button/SelectBg'; 
-import AmbientSoundSelector from '../components/Button/Sounds';
 
-const HomePage = () => {
+// 💡 HomePage รับ Props ทั้งหมดจาก App.js
+const HomePage = ({
+    currentBackgroundUrl, 
+    handleBackgroundSelect,
+    currentSoundUrl,
+    volume,
+    isPlaying,
+    handleSoundSelect,
+    handleVolumeChange,
+}) => {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
     const [currentTime, setCurrentTime] = useState(''); 
-
-    // 1. State สำหรับ Background
-    const defaultBgUrl = backgroundImage; 
-    const [currentBackground, setCurrentBackground] = useState(() => {
-        return sessionStorage.getItem('selectedBackground') || defaultBgUrl;
-    }); 
-
-    // 🛑 State ใหม่: ควบคุม Modal ที่กำลังเปิดอยู่ (สามารถเป็น 'background', 'sound', หรือ null)
-    const [openModal, setOpenModal] = useState(null);
     
-    // 2. ฟังก์ชัน Callback สำหรับเปลี่ยนพื้นหลัง
-    const handleBackgroundSelect = (bgUrl) => {
-        setCurrentBackground(bgUrl);
-        sessionStorage.setItem('selectedBackground', bgUrl); 
-    };
-
     // ฟังก์ชันสำหรับดึงเวลาปัจจุบันใน Time Zone ไทย
     const getThaiTime = () => {
         const now = new Date();
@@ -42,17 +30,6 @@ const HomePage = () => {
         }).format(now);
         
         return thaiTime.substring(0, 5);
-    };
-
-    // 🛑 ฟังก์ชันใหม่: ใช้เพื่อเปิด Modal
-    const handleOpenModal = (modalName) => {
-        // ถ้า Modal ที่กดซ้ำคืออันที่เปิดอยู่ ให้ปิดมัน
-        if (openModal === modalName) {
-            setOpenModal(null);
-        } else {
-            // เปิด Modal ใหม่
-            setOpenModal(modalName);
-        }
     };
 
     useEffect(() => {
@@ -83,16 +60,10 @@ const HomePage = () => {
         
     }, [navigate]);
 
-    const handleNavClick = (path) => {
-        console.log(`Navigating to ${path}`);
-    };
-
     return (
-        <div 
-            className="home-page-container"
-            style={{ backgroundImage: `url(${currentBackground})` }}
-        >
-            
+        // 🛑 ลบ style={{ backgroundImage... }} ออกจาก div.home-page-container 
+        // เพราะ App.js ตั้งค่าที่ document.documentElement แล้ว
+        <div className="home-page-container">
             {/* Header / Quote */}
             <header className="home-header">
                 <div className="app-branding">
@@ -111,28 +82,16 @@ const HomePage = () => {
                 <h1 className="homepage-title">This is Homepage Armageddon</h1>
                 
                 <div className="timer-display">
-                    {currentTime.substring(0, 5) || '00:00'} 
+                    {currentTime || '00:00'} 
                 </div>
             </main>
             
-            {/* Footer / Navigation Icons */}
-            <footer className="home-footer">
+            {/* Footer / Bottom Navigation */}
+            <footer className="home-footer" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                 
-                {/* Left Side Icons */}
+                {/* Left Side Icons (Modals/Controls) - ถูกย้ายไป App.js แล้ว */}
                 <div className="footer-icons">
-                    {/* 🛑 เปลี่ยนปุ่ม Music เดิม เป็น AmbientSoundSelector */}
-                    <AmbientSoundSelector
-                        isOpen={openModal === 'sound'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
-                        onToggle={() => handleOpenModal('sound')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
-                    />
-                    
-                    {/* BackgroundButton */}
-                    <BackgroundButton 
-                        isOpen={openModal === 'background'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
-                        onToggle={() => handleOpenModal('background')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
-                        onSelectBackground={handleBackgroundSelect}
-                    />
-                    
+                    {/* ว่างเปล่า */}
                 </div>
 
                 {/* Right Side Icons (Navigation) */}

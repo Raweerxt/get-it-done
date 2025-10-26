@@ -1,112 +1,168 @@
 /* fileName: SelectBg.css */
 
 /* ------------------------------------- */
-/* 1. Positioning the Modal (Left-Bottom)*/
+/* 1. Positioning the Modal (LEFT-BOTTOM FIXED) */
 /* ------------------------------------- */
 
+/* Modal Wrapper ต้องเป็น position: absolute สัมพันธ์กับ utility-fixed-container */
 .bg-selector-modal-wrapper {
-    position: absolute; /* สัมพันธ์กับ Container/ปุ่มหลักใน Footer */
-    bottom: 50px; /* เลื่อนขึ้นจากปุ่มเล็กน้อย */
-    left: 0; /* 🛑 จัดตำแหน่งไปทางซ้าย */
-    padding-left: 35px; /* 🛑 เพิ่ม Padding ให้ห่างจากขอบซ้าย */
-    padding-bottom: 20px;
+    position: absolute; 
+    /* 💡 ตำแหน่ง: วาง Modal ให้แสดงผลอยู่ด้านบนของปุ่มตัวเอง (Background Button)
+       โดยให้ด้านล่างของ Modal อยู่ที่ขอบบนของปุ่ม */
+    bottom: 50px; /* 50px คือความสูงของปุ่ม + margin เล็กน้อย */
+    
+    /* 🛑 NEW: ขยับไปทางขวาเพื่อให้ Modal Background อยู่ถัดจาก Modal Sound */
+    left: 50px; 
+    /* Sound Modal อยู่ที่ left: 0, ดังนั้น Background Modal ควรอยู่ถัดไป */
+
+    /* รีเซ็ต Padding เดิม */
+    padding-left: 0; 
+    padding-bottom: 0;
 }
 
+
 /* ------------------------------------- */
-/* 2. Modal Styling (คล้าย settings-modal) */
+/* 2. Modal Styling */
 /* ------------------------------------- */
 .bg-selector-modal {
-    width: 280px; /* 🛑 ใช้ความกว้างที่เล็กลงเหมือน Settings */
+    width: 320px; /* เพิ่มความกว้างเล็กน้อยเพื่อให้ Grid 3 คอลัมน์ดูดี */
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    padding: 15px 20px;
+    padding: 15px 20px 20px 20px; /* ปรับ Padding */
     display: flex;
     flex-direction: column;
-    color: #333; /* สีข้อความ */
+    color: #333; 
     
-    max-width: none; 
-    max-height: 80vh; /* กำหนดความสูงสูงสุดเป็น 80% ของความสูงหน้าจอ */
-    overflow-y: auto;  /* เปิดใช้งาน Scrollbar แนวตั้ง เมื่อเนื้อหาเกิน */
+    max-height: 80vh; 
+    overflow-y: auto;
     
-    /* 🛑 ใช้ Animation ใหม่ */
-    animation: slideInBottomLeft 0.3s ease-out;
+    /* 💡 Animation: สไลด์ขึ้นจากตำแหน่งของปุ่ม */
+    transform-origin: bottom left;
+    animation: slideInBottom 0.3s ease-out; 
 }
 
-/* ปุ่มปิด Modal (ใช้สไตล์เดียวกับ Setting.css) */
+/* นำ Animation จาก Sounds.css มาใช้ซ้ำ */
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ปุ่มปิด Modal (X icon) */
 .close-button {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     background: none;
     border: none;
     cursor: pointer;
-    color: #666;
-    padding: 0;
-    transition: color 0.2s;
-    z-index: 20;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    z-index: 20; 
 }
 
 .close-button:hover {
-    color: #000;
+    background-color: #f0f0f0;
 }
 
-/* Modal Title (ใช้สไตล์เดียวกับ Setting.css) */
+/* Modal Header/Title (ให้ Sticky) */
 .modal-title {
-font-size: 1.1em;
-    font-weight: 600;
-    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    padding-bottom: 10px;
+    margin-bottom: 5px; 
     border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
-    margin-top: 0;
-    display: block; 
-    /* 🛑 สำคัญ: ทำให้ Title ไม่เลื่อนไปพร้อมกับเนื้อหา (Sticky) */
+    
+    /* 🛑 ทำให้ Title เป็น Sticky ด้านบนสุด */
     position: sticky; 
-    top: -15px; /* ชดเชยด้วยค่าลบของ padding-top ของ Modal */
-    background-color: white; /* ใส่พื้นหลังสีขาวเพื่อให้เนื้อหาที่อยู่ด้านล่างไม่ทับ */
-    z-index: 10; /* ให้ Title อยู่ด้านบนสุด */
-    padding-top: 15px; /* เพิ่ม padding-top ชดเชย */
+    top: -20px; /* ชดเชยด้วยค่าลบของ padding-top ของ Modal */
+    background-color: white; 
+    z-index: 10; 
+    padding-top: 20px; /* เพิ่ม padding-top ชดเชย */
     margin-right: -20px; /* ชดเชย padding ด้านข้างของ modal */
     padding-right: 20px;
     margin-left: -20px;
     padding-left: 20px;
 }
 
-/* 3. Grid สำหรับรูปภาพ */
+
+/* ------------------------------------- */
+/* 3. Background Grid & Options */
+/* ------------------------------------- */
+
 .background-grid {
-    margin-top: 15px; /* เพิ่มระยะห่างระหว่าง Title กับ Grid */
     display: grid;
-    grid-template-columns: repeat(3, 1fr); 
+    grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ */
     gap: 10px;
-    width: 100%;
 }
 
 .background-option {
-    width: 100%;
-    aspect-ratio: 1 / 1; 
-    background-size: cover;
-    background-position: center;
-    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 8px;
     cursor: pointer;
-    border: 2px solid transparent; 
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    display: block; 
+    transition: all 0.2s;
+    overflow: hidden;
+    position: relative;
 }
 
-.background-option:hover {
-    border-color: #007bff; 
-    transform: none; 
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+.background-option:hover .bg-preview-container {
+    box-shadow: 0 0 0 3px #34d399; /* Highlight on hover */
+}
+
+.background-option.active .bg-preview-container {
+    box-shadow: 0 0 0 3px #10b981; /* Stronger highlight on active (Emerald 500) */
+}
+
+.bg-preview-container {
+    width: 100%;
+    /* 🛑 เปลี่ยนเป็น aspect-ratio เพื่อกำหนดสัดส่วนที่ชัดเจนขึ้น */
+    aspect-ratio: 4/3; 
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 5px;
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+
+.bg-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.selection-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(16, 185, 129, 0.5); /* Overlay สีเขียวโปร่งแสง */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .background-name {
-    display: none; 
-}
-
-/* Animation */
-@keyframes slideInBottomLeft {
-    /* 🛑 มาจากซ้ายล่าง */
-    from { opacity: 0; transform: translate(-20px, 20px) scale(0.95); }
-    to { opacity: 1; transform: translate(0, 0) scale(1); }
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #555;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    padding: 0 2px;
 }

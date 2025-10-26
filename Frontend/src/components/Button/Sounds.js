@@ -1,8 +1,9 @@
-// fileName: Sounds.js
-import React, { useState, useEffect, useRef } from 'react';
+// fileName: Sounds.js (Corrected and Updated)
+
+import React from 'react'; 
 import './Sounds.css';
-// นำเข้า Icon สำหรับปุ่มปิด (X) และควบคุมเสียง (Volume2, VolumeX)
-import { X, Volume2, VolumeX } from 'lucide-react'; 
+// 🛑 นำเข้า Icon สำหรับ Play/Pause เพิ่มเติม
+import { X, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 
 // 🛑 Import ไฟล์เสียงทั้งหมด (ตรวจสอบพาธ: ../../assets/sound/)
 import CafeSound from '../../assets/sound/Cafe.mp3';
@@ -12,8 +13,8 @@ import OceanSound from '../../assets/sound/Ocean.mp3';
 import RainSound from '../../assets/sound/Rain.mp3';
 import RiverSound from '../../assets/sound/River.mp3'; 
 
-// ข้อมูลเสียงบรรยากาศ
-const soundOptions = [
+// ข้อมูลเสียงบรรยากาศ - ต้อง Export ให้ App.js เข้าถึงได้
+export const soundOptions = [
     { name: 'Rain', url: RainSound, icon: '🌧️' },
     { name: 'Ocean', url: OceanSound, icon: '🌊' },
     { name: 'Forest', url: ForestSound, icon: '🌲' },
@@ -22,90 +23,68 @@ const soundOptions = [
     { name: 'Café', url: CafeSound, icon: '☕' },
 ];
 
-const AmbientSoundSelector = ({ isOpen, onToggle }) => {
-    const [currentSoundUrl, setCurrentSoundUrl] = useState(null); 
-    // State สำหรับเก็บระดับเสียง (0.0 ถึง 1.0) เริ่มต้นที่ 50%
-    const [volume, setVolume] = useState(0.5); 
-    // useRef สำหรับอ้างอิงถึง Audio Element
-    const audioRef = useRef(new Audio()); 
+// 💡 AmbientSoundSelector รับ Props ควบคุมทั้งหมดจาก App.js
+const AmbientSoundSelector = ({ 
+    isOpen, 
+    onToggle, 
+    currentSoundUrl, 
+    volume,    
+    // 🛑 เพิ่ม isPlaying prop เข้ามา
+    isPlaying,      
+    handleSelect,    
+    handleVolumeChange 
+}) => {
     
-    // ฟังก์ชันสำหรับจัดการการเลือก/เล่นเสียง
-    const handleSelect = (soundOption) => {
-        const newUrl = soundOption.url;
-        const audio = audioRef.current;
-
-        if (currentSoundUrl === newUrl) {
-            // ถ้ากดซ้ำ: หยุดเล่นและยกเลิกการเลือก
-            audio.pause();
-            audio.currentTime = 0; 
-            setCurrentSoundUrl(null);
-        } else {
-            // ถ้าเลือกเสียงใหม่:
-            audio.src = newUrl;
-            audio.loop = true; 
-            audio.volume = volume; // ใช้ระดับเสียงปัจจุบัน
-            
-            // เริ่มเล่นเสียง
-            audio.play().catch(error => {
-                console.error("Audio playback error (Autoplay prevented):", error);
-            }); 
-            setCurrentSoundUrl(newUrl);
+    // 💡 Logic สำหรับการกด Play/Pause ที่ไม่ใช่การเลือกเสียงใหม่
+    const togglePlayPause = () => {
+        const currentSoundOption = soundOptions.find(s => s.url === currentSoundUrl);
+        // ถ้ามีเสียงปัจจุบัน ให้ใช้ handleSelect เพื่อสลับสถานะ Play/Pause ใน App.js
+        if (currentSoundOption) {
+            handleSelect(currentSoundOption);
         }
     };
-    
-    // Effect 1: Cleanup เมื่อ Component ถูก Unmount (หยุดเสียง)
-    useEffect(() => {
-        const audio = audioRef.current;
-        return () => {
-            audio.pause();
-            audio.currentTime = 0;
-        };
-    }, []); 
 
-    // Effect 2: อัปเดตระดับเสียงของ Audio Element เมื่อ Volume State เปลี่ยน
-    useEffect(() => {
-        audioRef.current.volume = volume;
-    }, [volume]);
-    
-    // ฟังก์ชันสำหรับจัดการการเปลี่ยนแปลงของ Slider
-    const handleVolumeChange = (e) => {
-        // e.target.value เป็น 0-100, แปลงเป็น 0.0-1.0
-        const newVolume = parseFloat(e.target.value) / 100;
-        setVolume(newVolume);
-    };
-
+    const isAnySoundSelected = currentSoundUrl !== null && currentSoundUrl !== '';
 
     return (
         <React.Fragment>
-            {/* 1. ปุ่มหลัก: ใช้ onToggle แทน toggleModal */}
-            <button 
-                className="footer-icon-button" 
-                onClick={onToggle} // 🛑 เมื่อคลิก จะเรียก onToggle ที่ส่งมาจาก Home.js
-                aria-label="Select Ambient Sound"
-                title="Change Ambient Sound"
-            >
-                <Volume2 size={24} color={currentSoundUrl ? 'lime' : '#FFF'} /> 
-            </button>
+            
+            {isOpen && (
+                <div className="sound-selector-modal-wrapper-fixed"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
+                    <div className="sound-selector-modal"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
+                        
+                        {/* Header/Title */}
+                        <div className="modal-header">
+                            <h3>Ambient Sounds</h3>
+                            <button className="close-button" onClick={onToggle} title="Close">
+                                <X size={20} color="#333" />
+                            </button>
+                        </div>
+                        
+                        {/* 🛑 ปุ่มควบคุม Play/Pause (เพิ่มมาเพื่อ UX) */}
+                        <div className="sound-controls">
+                            <button 
+                                className="play-pause-button" 
+                                onClick={togglePlayPause} 
+                                title={isPlaying ? 'Pause Sound' : 'Play Sound'}
+                                disabled={!isAnySoundSelected}
+                            >
+                                {isPlaying ? <Pause size={32} color="#333" /> : <Play size={32} color="#333" />}
+                            </button>
+                            <span className="control-label">
+                                {isPlaying && isAnySoundSelected ? 'Playing' : 'Paused'}
+                                {!isAnySoundSelected && ' (Select a sound)'}
+                            </span>
+                        </div>
 
-            {/* 2. Modal สำหรับ Ambient Sound Selector */}
-            {isOpen && ( // 🛑 ใช้ Props isOpen ในการแสดงผล
-                <div className="sound-selector-modal-wrapper"> 
-                    <div className="sound-selector-modal">
-                        
-                        {/* ปุ่มปิด Modal: ใช้ onToggle แทน toggleModal */}
-                        <button className="close-button" onClick={onToggle} aria-label="Close">
-                            <X size={20} color="#333" />
-                        </button>
-                        
-                        <h4 className="modal-title">Ambient Sounds</h4> 
-                        
-                        <div className="sound-grid">
-                            {soundOptions.map((sound) => ( 
+                        {/* Sound Grid */}
+                        <div className="sound-grid"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
+                            {soundOptions.map((sound) => (
                                 <div 
                                     key={sound.name}
-                                    className={`sound-option ${currentSoundUrl === sound.url ? 'active' : ''}`} 
+                                    className={`sound-option ${currentSoundUrl === sound.url ? 'active' : ''}`}
                                     onClick={() => handleSelect(sound)}
-                                    title={`Play ${sound.name}`}
+                                    title={currentSoundUrl === sound.url && isPlaying ? `Pause ${sound.name}` : `Play ${sound.name}`}
                                 >
                                     <span className="sound-icon" role="img" aria-label={sound.name}>
                                         {sound.icon}
@@ -115,8 +94,8 @@ const AmbientSoundSelector = ({ isOpen, onToggle }) => {
                             ))}
                         </div>
                         
-                        {/* 🛑 Volume Control อยู่ด้านล่างสุด */}
-                        <div className="volume-control">
+                        {/* Volume Control */}
+                        <div className="volume-control"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
                             <VolumeX size={20} color="#333" />
                             
                             <input 
@@ -127,6 +106,7 @@ const AmbientSoundSelector = ({ isOpen, onToggle }) => {
                                 className="volume-slider" 
                                 onChange={handleVolumeChange} 
                                 aria-label="Volume"
+                                disabled={!isAnySoundSelected}
                             />
                             
                             <Volume2 size={20} color="#333" />

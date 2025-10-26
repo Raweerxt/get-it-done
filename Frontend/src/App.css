@@ -1,6 +1,25 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* เพิ่ม Background CSS ที่นี่ เพื่อให้ App component เป็นตัวจัดการ Background */
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
 }
+
+/* 💡 CSS ใหม่: Container สำหรับ AmbientSoundSelector และ BackgroundButton */
+.utility-fixed-container {
+    position: fixed; /* กำหนดตำแหน่งตายตัว */
+    bottom: 20px;   /* ห่างจากขอบล่าง 20px */
+    left: 20px;     /* ห่างจากขอบซ้าย 20px */
+    z-index: 1000;  /* ให้อยู่เหนือองค์ประกอบอื่น */
+    /* 💡 ใช้ Flex เพื่อจัดเรียงปุ่มให้เรียงต่อกันตามแนวนอน */
+    display: flex; 
+    gap: 10px; /* ระยะห่างระหว่างปุ่ม */
+}
+
 
 .App-logo {
   height: 40vmin;

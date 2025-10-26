@@ -1,10 +1,10 @@
-// fileName: SelectBg.js
+// fileName: SelectBg.js (Corrected and Updated)
+
 import React from 'react';
 import './SelectBg.css'; 
-// 🛑 นำเข้าไอคอนสำหรับปุ่มหลัก
-import { Image, X } from 'lucide-react'; 
+import { Image, X, Check } from 'lucide-react'; 
 
-//  1. Import รูปภาพพื้นหลังที่ต้องการทั้งหมดจาก src/assets/background/
+// 1. Import รูปภาพพื้นหลังที่ต้องการทั้งหมดจาก src/assets/background/
 import DefaultBg from '../../assets/bg.png'; 
 import AfterRainBg from '../../assets/background/AfterRain.png';
 import CloudBg from '../../assets/background/Cloud.png';
@@ -24,21 +24,25 @@ import SkyBg from '../../assets/background/Sky.png';
 import SnowRoadBg from '../../assets/background/SnowRoad.png';
 import StarryNightBg from '../../assets/background/StarryNight.png';
 
-//  2. ปรับปรุง backgroundOptions ให้ใช้ตัวแปรที่ Import เข้ามา
-const backgroundOptions = [
-    { name: 'Default', url: DefaultBg }, 
-    { name: 'After Rain', url: AfterRainBg },    
-    { name: 'Cloud', url: CloudBg },      
+
+// 💡 Placeholder URL (ใช้สำหรับ Fallback)
+const PLACEHOLDER_URL = (name) => `data:image/svg+xml;charset=UTF-8,%3Csvg width='200' height='150' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='150' fill='%23ccc'/%3E%3Ctext x='100' y='75' font-size='12' text-anchor='middle' alignment-baseline='middle' fill='%23666'%3E${name}%3C/text%3E%3C/svg%3E`;
+
+// 2. ข้อมูลพื้นหลัง
+export const backgroundOptions = [
+    { name: 'Default Forest', url: DefaultBg },
+    { name: 'After Rain', url: AfterRainBg },
+    { name: 'Cloud', url: CloudBg },
     { name: 'Dam', url: DamBg },
     { name: 'Dark Coast', url: DarkCoastBg },
     { name: 'Earth', url: EarthBg },
-    { name: 'Grass', url: GrassBg },
-    { name: 'Hill', url: HillBg },
+    { name: 'Grass Field', url: GrassBg },
+    { name: 'Hill Path', url: HillBg },
     { name: 'Lake', url: LakeBg },
     { name: 'Mountain', url: MountainBg },
     { name: 'Nasa', url: NasaBg },
     { name: 'Pastel', url: PastelBg },
-    { name: 'Rain', url: RainBg },
+    { name: 'Rainy Day', url: RainBg },
     { name: 'Road', url: Road },
     { name: 'Sea', url: SeaBg },
     { name: 'Sky', url: SkyBg },
@@ -46,45 +50,52 @@ const backgroundOptions = [
     { name: 'Starry Night', url: StarryNightBg },
 ];
 
-const BackgroundButton = ({ onSelectBackground, isOpen, onToggle }) => { 
+// 🛑 Component รับ Props: isOpen, onToggle, onSelectBackground, currentBackgroundUrl
+const BackgroundButton = ({ isOpen, onToggle, onSelectBackground, currentBackgroundUrl }) => {
 
-    // ฟังก์ชันสำหรับจัดการการเลือกพื้นหลัง
-    const handleSelect = (url) => {
-        onSelectBackground(url);
+    const handleSelect = (bgUrl) => {
+        onSelectBackground(bgUrl); // ส่ง URL กลับไป App.js
+        // 🛑 ตามความต้องการ: ไม่มีการเรียก onToggle() ที่นี่ เพื่อไม่ให้ Modal ปิดอัตโนมัติ
     };
 
     return (
         <React.Fragment>
-            {/* 1. ปุ่มหลัก: ใช้ onToggle แทน toggleModal */}
-            <button 
-                className="footer-icon-button" 
-                onClick={onToggle} // 🛑 เมื่อคลิก จะเรียก onToggle ที่ส่งมาจาก Home.js
-                aria-label="Select Background"
-                title="Change Background"
-            >
-                <Image size={24} color="#FFF" /> 
-            </button>
-
-            {/* 2. Modal/Pop-up: แสดงผลตาม Props isOpen */}
-            {isOpen && ( // 🛑 ใช้ Props isOpen ในการแสดงผล
-                <div className="bg-selector-modal-wrapper">
-                    <div className="bg-selector-modal">
-                        {/* ปุ่มปิด Modal: ใช้ onToggle แทน toggleModal */}
+            {/* Modal/Pop-up: แสดงผลตาม Props isOpen */}
+            {isOpen && ( 
+                <div className="bg-selector-modal-wrapper"> 
+                    <div className="bg-selector-modal"> {/* 🛑 ใช้คลาสตาม SelectBg.css */}
+                        
+                         {/* ปุ่มปิด Modal */}
                         <button className="close-button" onClick={onToggle} aria-label="Close">
                             <X size={20} color="#333" />
                         </button>
                         
                         <h4 className="modal-title">Select Background</h4> 
                         
-                        <div className="background-grid">
+                        <div className="background-grid"> {/* 🛑 ใช้คลาสตาม SelectBg.css */}
                             {backgroundOptions.map((bg) => (
                                 <div 
                                     key={bg.name}
-                                    className="background-option" 
+                                    className={`background-option ${currentBackgroundUrl === bg.url ? 'active' : ''}`}
                                     onClick={() => handleSelect(bg.url)}
-                                    style={{ backgroundImage: `url(${bg.url})` }}
                                     title={`Select ${bg.name}`}
                                 >
+                                    <div className="bg-preview-container">
+                                        <img 
+                                            src={bg.url} 
+                                            alt={bg.name} 
+                                            className="bg-preview-img"
+                                            onError={(e) => { 
+                                                e.target.src = PLACEHOLDER_URL(bg.name); 
+                                                e.target.style.objectFit = 'contain'; 
+                                            }}
+                                        />
+                                         {currentBackgroundUrl === bg.url && (
+                                            <div className="selection-indicator">
+                                                <Check size={20} color="#FFF" />
+                                            </div>
+                                        )}
+                                    </div>
                                     <span className="background-name">{bg.name}</span>
                                 </div>
                             ))}
