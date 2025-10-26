@@ -1,17 +1,53 @@
-/* fileName: Sounds.css */
+/* ------------------------------------- */
+/* 0. Footer Button (ใช้ร่วมกับ Home/Focus/Streak) */
+/* ------------------------------------- */
+.sound-toggle-button {
+    /* เพิ่มสไตล์ Active State เมื่อเสียงกำลังเล่น */
+    transition: transform 0.2s, background-color 0.2s;
+    position: relative;
+}
+
+.sound-toggle-button.is-playing {
+    background-color: #34d399; /* Emerald 400 */
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 5px rgba(52, 211, 153, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(52, 211, 153, 1);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(52, 211, 153, 0.8);
+    }
+}
+
 
 /* ------------------------------------- */
-/* 1. Positioning the Modal (Left-Bottom)*/
+/* 1. Positioning the Modal (LEFT-BOTTOM FIXED) */
 /* ------------------------------------- */
+/* 💡 CSS ใหม่สำหรับปุ่มที่ Fixed Position ใน App.js */
+.sound-selector-modal-wrapper-fixed {
+    /* จัดตำแหน่งให้อยู่ด้านซ้ายล่างเหนือปุ่ม */
+    position: absolute; 
+    bottom: 50px; /* สูงกว่าปุ่ม 50px */
+    left: 0px; 
+    padding-left: 0; 
+    padding-bottom: 0;
+}
 
+/* 🛑 CSS เดิม (สำหรับปุ่มที่อยู่ใน Footer ของหน้าย่อย) - ไม่ใช้แล้วแต่เก็บไว้เผื่ออนาคต */
 .sound-selector-modal-wrapper {
-    /* 🛑 จัดตำแหน่งให้อยู่ด้านซ้ายล่าง */
     position: absolute; 
     bottom: 50px; 
     left: 0; 
     padding-left: 35px; 
     padding-bottom: 20px;
 }
+
 
 /* ------------------------------------- */
 /* 2. Modal Styling */
@@ -30,108 +66,115 @@
     max-height: 80vh; 
     overflow-y: auto;
     
-    animation: slideInBottomLeft 0.3s ease-out; 
+    /* 💡 เปลี่ยน Animation ให้สไลด์ขึ้นจากมุมซ้ายล่าง */
+    transform-origin: bottom left;
+    animation: slideInBottom 0.3s ease-out; 
 }
+
+/* 💡 Animation ใหม่: slideInBottom */
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 /* ปุ่มปิด Modal (X icon) */
 .close-button {
     position: absolute;
     top: 10px;
-    right: 20px;
+    right: 10px;
     background: none;
     border: none;
     cursor: pointer;
-    color: #333; 
-    padding: 0;
-    z-index: 20; 
-    transition: color 0.2s;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    z-index: 20; /* ให้อยู่เหนือ header content */
 }
 
 .close-button:hover {
-    color: #000;
+    background-color: #f0f0f0;
 }
 
-/* Modal Title (Ambient Sounds) */
-.modal-title {
-    font-size: 1.1em;
+/* Modal Header (Title) */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-right: 35px; /* ชดเชยปุ่มปิด */
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 10px;
-    /* 🛑 คืนค่าเส้นคั่นเดิม */
-    border-bottom: 2px solid #333; 
-    padding-bottom: 5px;
-    margin-top: 0;
-    display: block; 
-    
-    /* Title Sticky เมื่อ Scroll */
-    position: sticky;
-    top: -15px; 
-    background-color: white;
-    z-index: 10;
-    padding-top: 15px; 
-    
-    /* ชดเชย Padding ด้านข้างของ Modal */
-    margin-right: -15px;
-    padding-right: 15px;
-    margin-left: -15px;
-    padding-left: 15px;
+    color: #333;
+    margin: 0;
 }
 
-/* 3. Grid สำหรับปุ่มเลือกเสียง */
+/* ------------------------------------- */
+/* 3. Sound Grid & Options */
+/* ------------------------------------- */
+
 .sound-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 15px; 
-    width: 100%;
-    /* 🛑 เพิ่ม padding-bottom เพื่อไม่ให้รูปติดกับ Volume Control */
-    padding-bottom: 15px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-grow: 1; /* ให้ Grid ขยายเต็มพื้นที่ */
 }
 
 .sound-option {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 15px 5px;
-    background-color: white;
-    border: 1px solid #ddd;
+    padding: 8px 12px;
     border-radius: 8px;
+    background-color: #f5f5f5;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    aspect-ratio: 1 / 1; 
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .sound-option:hover {
-    border-color: #007bff; 
-    background-color: #f0f8ff; 
+    background-color: #e0e0e0;
 }
 
 .sound-option.active {
-    border-color: #007bff; 
-    background-color: #e6f3ff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+    background-color: #34d399; /* Emerald 400 */
+    color: white;
+    box-shadow: 0 2px 5px rgba(52, 211, 153, 0.4);
+    transform: translateY(-1px);
+}
+
+.sound-option.active .sound-icon,
+.sound-option.active .sound-name {
+    filter: none; /* ลบ filter หากมี */
+    color: white; /* ตั้งสีชื่อให้เป็นสีขาว (Icon ยังเป็น Emoji) */
 }
 
 .sound-icon {
-    font-size: 36px; 
-    line-height: 1;
-    margin-bottom: 5px;
+    margin-right: 8px;
+    font-size: 1.2rem;
 }
 
-.sound-name {
-    font-size: 0.85em;
-    font-weight: 500;
-    color: #555;
-    text-align: center;
-}
+/* ------------------------------------- */
+/* 4. Volume Control */
+/* ------------------------------------- */
 
-/* 🛑 Volume Control อยู่ด้านล่างสุดของ Modal (ไม่ Sticky) */
 .volume-control {
     display: flex;
     align-items: center;
     gap: 10px;
+    width: 100%;
     
-    /* เพิ่ม Margin และ Border ด้านบนเพื่อแยกจาก Grid */
+    /* 💡 ทำให้ Volume Control มี Border ด้านบนเพื่อแยกจาก Grid */
     padding: 15px 0 15px 0; /* เพิ่ม Padding ด้านบนและล่าง */
     border-top: 1px solid #ddd; 
     
@@ -172,23 +215,17 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #007bff;
+    background: #34d399; /* Emerald 400 */
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
+/* สไตล์ Thumb (วงกลมที่เลื่อนได้) สำหรับ Firefox */
 .volume-slider::-moz-range-thumb {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #007bff;
+    background: #34d399;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    border: none;
-}
-
-/* Animation for Bottom Left */
-@keyframes slideInBottomLeft {
-    from { opacity: 0; transform: translate(-20px, 20px) scale(0.95); }
-    to { opacity: 1; transform: translate(0, 0) scale(1); }
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }

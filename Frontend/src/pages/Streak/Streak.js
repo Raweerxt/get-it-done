@@ -5,9 +5,6 @@ import backgroundImage from '../../assets/bg.png';
 import SettingsButton from '../../components/Button/Setting'; 
 // นำเข้า Icon ที่จำเป็น (ลบ PaintBucket ออก)
 import { BookText, Home, Flame } from 'lucide-react'; 
-// นำเข้า BackgroundButton Component ใหม่
-import BackgroundButton from '../../components/Button/SelectBg'; 
-import AmbientSoundSelector from '../../components/Button/Sounds';
 
 import { Line } from 'react-chartjs-2'; 
 
@@ -34,37 +31,18 @@ ChartJS.register(
   Legend
 );
 
-const StreakPage = () => {
+const StreakPage = ({
+    currentBackgroundUrl, 
+    handleBackgroundSelect,
+    currentSoundUrl,
+    volume,
+    isPlaying,
+    handleSoundSelect,
+    handleVolumeChange,
+}) => {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
     const [currentTime, setCurrentTime] = useState(''); 
-
-    // 1. State สำหรับ Background
-    const defaultBgUrl = backgroundImage; 
-    const [currentBackground, setCurrentBackground] = useState(() => {
-        return sessionStorage.getItem('selectedBackground') || defaultBgUrl;
-    }); 
-
-    // 🛑 State ใหม่: ควบคุม Modal ที่กำลังเปิดอยู่ (สามารถเป็น 'background', 'sound', หรือ null)
-    const [openModal, setOpenModal] = useState(null);
-    
-    // 2. ฟังก์ชัน Callback สำหรับเปลี่ยนพื้นหลัง
-    const handleBackgroundSelect = (bgUrl) => {
-        setCurrentBackground(bgUrl);
-        sessionStorage.setItem('selectedBackground', bgUrl); 
-    };
-
-
-    // 🛑 ฟังก์ชันใหม่: ใช้เพื่อเปิด Modal
-    const handleOpenModal = (modalName) => {
-        // ถ้า Modal ที่กดซ้ำคืออันที่เปิดอยู่ ให้ปิดมัน
-        if (openModal === modalName) {
-            setOpenModal(null);
-        } else {
-            // เปิด Modal ใหม่
-            setOpenModal(modalName);
-        }
-    };
 
     // --- STATE & EFFECT สำหรับสถิติ ---
     const [chartData, setChartData] = useState([]);
@@ -200,10 +178,7 @@ const StreakPage = () => {
     };
 
     return (
-        <div 
-            className="streak-page-container"
-            style={{ backgroundImage: `url(${currentBackground})` }}
-        >
+        <div className="streak-page-container" >
             
             {/* Header / Quote */}
             <header className="streak-header">
@@ -261,18 +236,6 @@ const StreakPage = () => {
                 
                 {/* Left Side Icons */}
                 <div className="footer-icons">
-                    {/* 🛑 เปลี่ยนปุ่ม Music เดิม เป็น AmbientSoundSelector */}
-                    <AmbientSoundSelector
-                        isOpen={openModal === 'sound'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
-                        onToggle={() => handleOpenModal('sound')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
-                    />
-                    
-                    {/* BackgroundButton */}
-                    <BackgroundButton 
-                        isOpen={openModal === 'background'} // ส่งสถานะว่า Modal นี้ควรเปิดหรือไม่
-                        onToggle={() => handleOpenModal('background')} // ส่งฟังก์ชันสำหรับเปิด/ปิดตัวเอง
-                        onSelectBackground={handleBackgroundSelect}
-                    />
                     
                 </div>
 
