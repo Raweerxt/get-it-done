@@ -4,7 +4,7 @@ const cors = require('cors');
 
 // 1. นำเข้า Routes (ที่เขียนด้วย Prisma แล้ว)
 const authRoutes = require('./routes/auth');
-const focusRoutes = require('./routes/focusApi');
+const focusApiRoutes = require('./routes/focusApi');
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ app.use(express.json()); // ให้ Express อ่าน req.body (JSON)
 // --- Routes Middleware ---
 // (เช็ค path ให้ตรงกับที่ Frontend เรียก)
 app.use('/api/auth', authRoutes); // /api/auth/login, /api/auth/signup
-app.use('/api/v1', focusRoutes);  // /api/v1/focus-sessions, /api/v1/stats/total
+app.use('/api/v1', focusApiRoutes);  // /api/v1/focus-sessions, /api/v1/stats/total
 
 // --- Test Route ---
 app.get('/', (req, res) => {

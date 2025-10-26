@@ -229,5 +229,116 @@ router.get('/stats/streak', authMiddleware, async (req, res) => {
     }
 });
 
+router.get('/statistics', authMiddleware, async (req, res) => {
+    const { id: userId } = req.user;
+
+    try {
+        // --- 1. Logic ดึง Total Time (จาก /stats/total) ---
+        const totalResult = await prisma.focusSession.aggregate({
+            _sum: { durationMinutes: true },
+            where: { userId: userId }
+        });
+        const totalTimeAllTimeMinutes = totalResult._sum.durationMinutes || 0;
+
+        // --- 2. Logic ดึง Weekly (จาก /stats/weekly) [ปรับเล็กน้อย] ---
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 6);
+
+        const sessions = await prisma.focusSession.findMany({
+            where: {
+                userId: userId,
+                createdAt: { gte: sevenDaysAgo }
+            },
+            select: { durationMinutes: true, createdAt: true }
+        });
+
+        const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        let weeklyDataMap = new Map();
+
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(sevenDaysAgo);
+            d.setDate(sevenDaysAgo.getDate() + i);
+            const dayKey = d.toISOString().split('T')[0];
+            const dayName = dayLabels[d.getUTCDay()]; 
+            
+            // 🛑 [ปรับแก้] ให้เก็บ totalMinutes (React ต้องการอันนี้)
+            weeklyDataMap.set(dayKey, { day: dayName, totalMinutes: 0 });
+        }
+
+        sessions.forEach(session => {
+            const sessionDateKey = session.createdAt.toISOString().split('T')[0];
+            if (weeklyDataMap.has(sessionDateKey)) {
+                const dayData = weeklyDataMap.get(sessionDateKey);
+                // 🛑 [ปรับแก้] บวกค่า totalMinutes
+                dayData.totalMinutes += session.durationMinutes; 
+                weeklyDataMap.set(sessionDateKey, dayData);
+            }
+        });
+        
+        // 🛑 [ปรับแก้] แปลง Map เป็น Array (React จะเอาไปหาร 60 เอง)
+        const last7Days = Array.from(weeklyDataMap.values());
+
+
+        // --- 3. Logic ดึง Streak (จาก /stats/streak) ---
+        const allSessions = await prisma.focusSession.findMany({
+            where: { userId: userId },
+            select: { createdAt: true },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        let currentStreak = 0;
+        if (allSessions.length > 0) {
+            const dateSet = new Set(
+                allSessions.map(s => s.createdAt.toISOString().split('T')[0])
+            );
+
+            let todayCheck = new Date();
+            const todayKey = todayCheck.toISOString().split('T')[0];
+            
+            let yesterdayCheck = new Date(todayCheck);
+            yesterdayCheck.setDate(todayCheck.getDate() - 1);
+            const yesterdayKey = yesterdayCheck.toISOString().split('T')[0];
+            
+            let dayToTest;
+
+            if (dateSet.has(todayKey)) {
+                currentStreak = 1;
+                dayToTest = new Date(todayCheck);
+            } else if (dateSet.has(yesterdayKey)) {
+                currentStreak = 1;
+                dayToTest = new Date(yesterdayCheck);
+            } else {
+                currentStreak = 0;
+            }
+            
+            if (currentStreak > 0) {
+                 for (let i = 1; i < dateSet.size; i++) {
+                    let previousDay = new Date(dayToTest);
+                    previousDay.setDate(dayToTest.getDate() - i);
+                    const previousDayKey = previousDay.toISOString().split('T')[0];
+
+                    if (dateSet.has(previousDayKey)) {
+                        currentStreak++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        // --- 4. รวบตึงข้อมูลทั้งหมดส่งกลับ ---
+        res.status(200).json({
+            totalTimeAllTimeMinutes: totalTimeAllTimeMinutes,
+            currentStreak: currentStreak,
+            last7Days: last7Days 
+        });
+
+    } catch (error) {
+        console.error("Combined Statistics Error:", error);
+        res.status(500).json({ message: 'Failed to fetch statistics' });
+    }
+});
 
 module.exports = router;
