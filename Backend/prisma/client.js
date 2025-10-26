@@ -1,12 +1,7 @@
+// prisma/client.js
 const { PrismaClient } = require('@prisma/client');
 
-let globalPrismaClient;
+// สร้าง instance เดียวและ export ไปใช้
+const prisma = new PrismaClient();
 
-if (!globalPrismaClient) {
-  globalPrismaClient = new PrismaClient();
-}
-
-module.exports = {
-  prisma: globalPrismaClient,
-};
-
+module.exports = { prisma };

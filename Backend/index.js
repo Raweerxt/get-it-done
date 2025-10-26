@@ -1,53 +1,34 @@
-// index.js (โค้ดฉบับสมบูรณ์)
-
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const { sequelize, connectDB } = require('./config/database'); 
-// Import Models เพื่อให้ Sequelize รู้จักตาราง
-const User = require('./models/User'); 
-const Session = require('./models/Session'); 
-// Import Route ที่เราเพิ่งสร้าง
-const authRoutes = require('./routes/auth'); 
 
-dotenv.config(); 
+// 1. นำเข้า Routes (ที่เขียนด้วย Prisma แล้ว)
+const authRoutes = require('./routes/auth');
+const focusRoutes = require('./routes/focusApi');
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000; 
+const PORT = process.env.PORT || 8000; // (ใช้ Port 8000 ตาม .env ของคุณ)
 
 // --- Middleware ---
-//app.use(cors({ origin: 'http://localhost:3000' }));
-
-// อนุญาตทุกอย่างชั่วคราว
-app.use(cors());
-
-// ต้องใช้ express.json() ก่อน Routes เพื่อให้รับ req.body ได้
-app.use(express.json()); 
+app.use(cors()); // อนุญาตทุกอย่าง
+app.use(express.json()); // ให้ Express อ่าน req.body (JSON)
 
 // --- Routes Middleware ---
-// กำหนดให้ทุก request ที่ขึ้นต้นด้วย /api/auth ให้ใช้ authRoutes
-app.use('/api/auth', authRoutes); 
-
-// --- ฟังก์ชัน Start Server ---
-const startServer = async () => {
-    // 1. ทดสอบและเชื่อมต่อฐานข้อมูล
-    await connectDB(); 
-
-    // 2. ซิงค์ Model กับ Database (สร้างตารางถ้ายังไม่มี)
-    await sequelize.sync({ alter: true }); 
-    console.log("✅ Database structure synced successfully.");
-
-    // 3. Start Express Server
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-};
+// (เช็ค path ให้ตรงกับที่ Frontend เรียก)
+app.use('/api/auth', authRoutes); // /api/auth/login, /api/auth/signup
+app.use('/api/v1', focusRoutes);  // /api/v1/focus-sessions, /api/v1/stats/total
 
 // --- Test Route ---
 app.get('/', (req, res) => {
-    res.status(200).json({ message: 'GetItDone Backend API is running!' });
+    res.status(200).json({ message: 'GetItDone Backend API is running! (Prisma Version)' });
 });
 
+// --- Start Server ---
+// (Prisma ไม่ต้องการ connectDB หรือ sync ที่นี่)
+app.listen(PORT, () => {
+    console.log(`✅ Server is running on port ${PORT} (Using Prisma)`);
+});
 
-// เริ่มกระบวนการทั้งหมด
-startServer();
+// ❌ (ลบ function startServer() และ connectDB() และ sequelize.sync() ทั้งหมด)

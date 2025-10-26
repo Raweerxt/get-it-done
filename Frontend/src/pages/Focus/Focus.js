@@ -111,7 +111,7 @@ const FocusPage = () => {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({
                     taskName: task,
-                    durationMinutes: totalDurationMinutes 
+                    durationMinutes: durationInMinutes 
                 })
             });
         } catch (error) {
