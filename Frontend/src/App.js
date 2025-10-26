@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Image, Volume2 } from 'lucide-react'; // 🛑 Import Icon สำหรับปุ่มควบคุม
 
 // Import หน้า Component
@@ -16,7 +16,7 @@ import BackgroundButton from './components/Button/SelectBg';
 import './App.css'; 
 import defaultBackgroundImage from './assets/bg.png';
 
-// Component สำหรับป้องกันการเข้าถึงหน้าถ้ายังไม่ได้ Login
+// 🛑 Component สำหรับป้องกันการเข้าถึงหน้าถ้ายังไม่ได้ Login
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('token'); 
   if (!isAuthenticated) {
@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Component สำหรับป้องกันไม่ให้เข้าหน้า Login/Signup ซ้ำซ้อน
+// 🛑 Component สำหรับป้องกันไม่ให้เข้าหน้า Login/Signup ซ้ำซ้อน
 const AuthRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('token'); 
   if (isAuthenticated) {
@@ -34,7 +34,15 @@ const AuthRoute = ({ children }) => {
   return children;
 };
 
-const App = () => {
+// 🛑 Component หลักที่มี Logic และ Hooks ทั้งหมด (ต้องอยู่ภายใน BrowserRouter)
+const AppBody = () => {
+
+    // 🛑 ใช้ useLocation เพื่อตรวจสอบเส้นทางปัจจุบัน
+    const location = useLocation();
+    
+    // 💡 กำหนดเส้นทางที่ไม่ต้องการให้แสดงปุ่มควบคุม
+    const authPaths = ['/signin', '/signup', '/'];
+    const shouldShowControls = !authPaths.includes(location.pathname);
 
     // ----------------------------------------------------
     // 🛑 1. BACKGROUND STATE & LOGIC
@@ -51,7 +59,7 @@ const App = () => {
     };
     
     // ----------------------------------------------------
-    // 🛑 2. SOUND STATE & LOGIC (แก้ไขลำดับการประกาศ)
+    // 🛑 2. SOUND STATE & LOGIC
     // ----------------------------------------------------
     
     // ✅ 1. ต้องประกาศตัวแปรนี้ก่อนที่จะนำไปใช้ใน useState ของ currentSoundUrl
@@ -62,7 +70,7 @@ const App = () => {
         return localStorage.getItem('selectedSoundUrl') || firstSoundOption.url;
     });
     
-    // 3. State/Ref อื่นๆ (สามารถประกาศตามมาได้)
+    // 3. State/Ref อื่นๆ
     const [volume, setVolume] = useState(() => {
         const storedVolume = localStorage.getItem('ambientVolume');
         return storedVolume !== null ? parseFloat(storedVolume) : 0.5;
@@ -91,7 +99,7 @@ const App = () => {
     };
 
 
-    // 🛑 Effect สำหรับใช้พื้นหลัง (ใช้ currentBackground)
+    // 🛑 Effect สำหรับใช้พื้นหลัง
     useEffect(() => {
         document.documentElement.style.backgroundImage = `url(${currentBackground})`;
         document.documentElement.style.backgroundSize = 'cover';
@@ -100,15 +108,13 @@ const App = () => {
         localStorage.setItem('selectedBackground', currentBackground);
     }, [currentBackground]);
 
-    // 🛑 useEffect สำหรับควบคุม Audio (ใช้ currentSoundUrl, isPlaying, volume)
+    // 🛑 useEffect สำหรับควบคุม Audio
     useEffect(() => {
         if (!audioRef.current) {
-            // ✅ currentSoundUrl ถูกประกาศแล้วที่ด้านบน ทำให้เรียกใช้ได้
             audioRef.current = new Audio(currentSoundUrl || ''); 
             audioRef.current.loop = true;
         }
         
-        // ... (Logic ควบคุม Play/Pause) ...
         if (audioRef.current) {
             if (audioRef.current.src !== currentSoundUrl) {
                 audioRef.current.src = currentSoundUrl || '';
@@ -145,34 +151,34 @@ const App = () => {
     // 🛑 3. RENDER: Controls, Modal และ Routes
     // ----------------------------------------------------
     
-    // ✅ ตัวแปร isAnySoundSelected ต้องถูกประกาศหลัง currentSoundUrl
     const isAnySoundSelected = !!currentSoundUrl;
 
     // 💡 ฟังก์ชันควบคุมการเปิด Modal เพื่อให้ Modal หนึ่งปิดเมื่ออีก Modal ถูกเปิด
     const toggleModal = (modalName) => {
         if (modalName === 'bg') {
             setIsBgModalOpen(prev => !prev);
-            setIsSoundModalOpen(false); // ปิด Modal Sound ถ้าเปิด Modal Background
+            setIsSoundModalOpen(false); // ปิด Modal Sound
         } else if (modalName === 'sound') {
             setIsSoundModalOpen(prev => !prev);
-            setIsBgModalOpen(false); // ปิด Modal Background ถ้าเปิด Modal Sound
+            setIsBgModalOpen(false); // ปิด Modal Background
         }
     };
     
     return (
-        <BrowserRouter>
-            <div className="App"> 
-                
-                {/* 💡 Container สำหรับ Controls และ Modal ที่ต้องแสดงผลทับทุกหน้า */}
+        <div className="App"> 
+            
+            {/* 🛑 CONDITIONAL RENDERING: แสดงเฉพาะเมื่อ shouldShowControls เป็น true */}
+            {shouldShowControls && (
                 <div className="utility-fixed-container">
                     
                     {/* 🛑 ปุ่มควบคุมรวมกันที่นี่ (Footer Icons) */}
+                    {/* 💡 Note: สลับตำแหน่งไอคอนเพื่อให้ Volume2 อยู่ซ้าย และ Image อยู่ขวา */}
                     <div className="app-global-controls" style={{ display: 'flex', gap: '10px' }}>
+                        
                         {/* ปุ่ม Sound Button */}
                         <button 
                             className={`footer-icon-button ${isPlaying && isAnySoundSelected ? 'is-playing' : ''}`}
                             title="Ambient Sounds" 
-                            
                             onClick={() => toggleModal('sound')} // ใช้ toggleModal
                         >
                             <Volume2 size={24} color="#FFF" />
@@ -182,59 +188,58 @@ const App = () => {
                         <button 
                             className="footer-icon-button" 
                             title="Change Background" 
-                            
                             onClick={() => toggleModal('bg')} // ใช้ toggleModal
                         >
                             <Image size={24} color="#FFF" />
                         </button>
-                        
-                        
                     </div>
 
                     {/* 🛑 Modal Controls (แสดงผลเมื่อถูกเปิด) */}
-
+                    
                     {/* Modal Background */}
                     <BackgroundButton
-                        onClick={() => setIsBgModalOpen(prev => !prev)} 
                         isOpen={isBgModalOpen}
-                        onToggle={() => setIsBgModalOpen(false)} // ปิด Modal ด้วยปุ่ม X
+                        onToggle={() => setIsBgModalOpen(false)} 
                         onSelectBackground={handleBackgroundSelect}
-                        currentBackgroundUrl={currentBackground} // 🛑 ส่ง URL ปัจจุบัน
+                        currentBackgroundUrl={currentBackground}
                     />
 
                     {/* Modal Sound */}
                     <AmbientSoundSelector
-                        onClick={() => setIsSoundModalOpen(prev => !prev)} 
                         isOpen={isSoundModalOpen}
                         onToggle={() => setIsSoundModalOpen(false)} 
                         currentSoundUrl={currentSoundUrl}
                         volume={volume}
-                        isPlaying={isPlaying} // ส่ง isPlaying ไปด้วย
+                        isPlaying={isPlaying} 
                         handleSelect={handleSoundSelect}
                         handleVolumeChange={handleVolumeChange}
                     />
-
-                    
-
                 </div>
+            )}
 
-                <Routes>
-                    
-                    {/* Routes */}
-                    <Route path="/signin" element={<AuthRoute><SigninPage /></AuthRoute>} />
-                    <Route path="/signup" element={<AuthRoute><SignupPage /></AuthRoute>} />
-                    <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} /> 
-                    <Route path="/focus" element={<ProtectedRoute><FocusPage /></ProtectedRoute>} /> 
-                    <Route path="/streak" element={<ProtectedRoute><StreakPage /></ProtectedRoute>} /> 
+            <Routes>
+                
+                {/* Routes */}
+                <Route path="/signin" element={<AuthRoute><SigninPage /></AuthRoute>} />
+                <Route path="/signup" element={<AuthRoute><SignupPage /></AuthRoute>} />
+                <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} /> 
+                <Route path="/focus" element={<ProtectedRoute><FocusPage /></ProtectedRoute>} /> 
+                <Route path="/streak" element={<ProtectedRoute><StreakPage /></ProtectedRoute>} /> 
 
-                    <Route path="/" element={<Navigate to="/signin" replace />} />
-                    <Route path="*" element={<Navigate to="/signin" replace />} />
-                    
-                </Routes>
-            </div>
-        </BrowserRouter>
+                <Route path="/" element={<Navigate to="/signin" replace />} />
+                <Route path="*" element={<Navigate to="/signin" replace />} />
+                
+            </Routes>
+        </div>
     );
 };
 
+
+// 🛑 Component App หลักที่ Export ออกไป (ห่อด้วย BrowserRouter)
+const App = () => (
+    <BrowserRouter>
+        <AppBody />
+    </BrowserRouter>
+);
 
 export default App;
