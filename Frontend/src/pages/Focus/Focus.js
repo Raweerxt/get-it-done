@@ -83,6 +83,8 @@ const FocusPage = ({
     const [isBreakActive, setIsBreakActive] = useState(false);
 
     const actualFocusSecondsRef = useRef(0);
+    const hasSessionCompletedRef = useRef(false);
+    const hasBreakCompletedRef = useRef(false);
     
     // Refs สำหรับ Inputs
     const taskInputRef = useRef(null); 
@@ -135,6 +137,8 @@ const FocusPage = ({
         setBreakTimeLeft(latestBreakDuration * 60); 
 
         actualFocusSecondsRef.current = 0;
+        hasSessionCompletedRef.current = false; //รีเซ็ต Ref
+        //hasBreakCompletedRef.current = false;
 
         // 2. หยุด Break และเริ่ม Focus
         setIsBreakActive(false);
@@ -154,7 +158,12 @@ const FocusPage = ({
                 setFocusTimeLeft(prevTime => {
                     if (prevTime <= 1) {
                         clearInterval(interval);
-                        
+
+                        if (hasSessionCompletedRef.current) {
+                            return 0; // ถ้าเคยจบไปแล้ว ก็ไม่ต้องทำซ้ำ
+                        }
+                        hasSessionCompletedRef.current = true; // Mark as completed
+
                         // 1. 🛑 Save session (บันทึกเวลาจริงจาก Ref)
                         saveActualFocus(actualFocusSecondsRef.current);
                         actualFocusSecondsRef.current = 0; // รีเซ็ต Ref
@@ -163,10 +172,10 @@ const FocusPage = ({
                         alert("Focus session completed!");
 
                         // 3. Transition to Break (โค้ดส่วนนี้เหมือนเดิม)
-                        const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
-                        setBreakDuration(latestBreakDuration); 
-                        setBreakTimeLeft(latestBreakDuration * 60);
-                        setIsBreakActive(true); 
+                        //const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
+                        //setBreakDuration(latestBreakDuration); 
+                        //setBreakTimeLeft(latestBreakDuration * 60);
+                        //setIsBreakActive(true); 
                         setIsFocusActive(false); 
 
                         return 0; 
@@ -186,11 +195,17 @@ const FocusPage = ({
     // Break Timer Effect (Break -> Focus ต่อ)
     useEffect(() => {
         let interval;
-        if (isBreakActive) {
+        if (isBreakActive && !hasBreakCompletedRef.current) {
             interval = setInterval(() => {
                 setBreakTimeLeft(prevTime => {
                     if (prevTime <= 1) {
                         clearInterval(interval);
+
+                        // 🛑 FIX: ตรวจสอบ Ref เพื่อป้องกันการทำงานซ้ำใน Strict Mode
+                        if (hasBreakCompletedRef.current) {
+                            return 0;
+                        }
+                        hasBreakCompletedRef.current = true; // Mark as completed
                         
                         // 1. Alert (แจ้ง Break หมด)
                         alert("Break's over!");
@@ -255,7 +270,6 @@ const FocusPage = ({
         };
     }, [isTimeEditing]); 
 
-
     // --- Time Input Handlers ---
     const handleTimeInputChange = (e, unit) => {
         let stringValue = e.target.value.slice(0, 2); 
@@ -317,6 +331,8 @@ const FocusPage = ({
 
         // 🛑 NEW: รีเซ็ตตัวนับวินาทีจริง
         actualFocusSecondsRef.current = 0; 
+        hasSessionCompletedRef.current = false; // รีเซ็ต Ref
+        hasBreakCompletedRef.current = false;
 
         setIsEditingTask(false);
         setIsTimeEditing(false);
@@ -336,6 +352,8 @@ const FocusPage = ({
         const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
         setBreakDuration(latestBreakDuration); 
         setBreakTimeLeft(latestBreakDuration * 60);
+
+        hasBreakCompletedRef.current = false;
         
         setIsBreakActive(true);
     };
@@ -373,6 +391,7 @@ const FocusPage = ({
     const breakTimeFormatted = formatTime(breakTimeLeft);
     const totalFocusMinutes = (inputHours * 60) + inputMinutes + (inputSeconds / 60);
     const formattedFocusDuration = formatSessionDuration(totalFocusMinutes);
+    const formattedBreakDuration = formatSessionDuration(breakDuration);
 
 
     return (
@@ -390,7 +409,7 @@ const FocusPage = ({
 
             <main className="focus-main-content">
                 <p className="session-indicator">
-                    {isBreakActive ? `Break (${breakDuration} min)` : `Focus (${formattedFocusDuration})`}
+                    {isBreakActive ? `Break (${formattedBreakDuration})` : `Focus (${formattedFocusDuration})`}
                 </p>
                
                 {isEditingTask ? (
