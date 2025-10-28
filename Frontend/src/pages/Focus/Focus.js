@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookText, Home, Flame, Edit2 } from 'lucide-react'; 
 import './Focus.css';
-import backgroundImage from '../../assets/bg.png';
 import SettingsButton from '../../components/Button/Setting';
 
 // ฟังก์ชัน Utility สำหรับแปลง 'MM:SS' ใน sessionStorage เป็นนาที
