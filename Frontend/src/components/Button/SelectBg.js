@@ -30,7 +30,7 @@ const PLACEHOLDER_URL = (name) => `data:image/svg+xml;charset=UTF-8,%3Csvg width
 
 // 2. ข้อมูลพื้นหลัง
 export const backgroundOptions = [
-    { name: 'Default Forest', url: DefaultBg },
+    { name: 'Default', url: DefaultBg },
     { name: 'After Rain', url: AfterRainBg },
     { name: 'Cloud', url: CloudBg },
     { name: 'Dam', url: DamBg },
