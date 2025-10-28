@@ -1,28 +1,73 @@
 /* ------------------------------------- */
 /* 0. Footer Button (ใช้ร่วมกับ Home/Focus/Streak) */
 /* ------------------------------------- */
-.sound-toggle-button {
-    /* เพิ่มสไตล์ Active State เมื่อเสียงกำลังเล่น */
-    transition: transform 0.2s, background-color 0.2s;
-    position: relative;
+/* ใช้คลาส Active ที่คุณกำหนดไว้ */
+/* ------------------------------------- */
+/* สไตล์สำหรับปุ่ม Play/Pause ใน Ambient Sounds */
+/* ------------------------------------- */
+
+.ambient-play-pause-button {
+    /* ขนาดและรูปร่าง */
+    width: 60px; /* ขนาดใหญ่ขึ้นเล็กน้อย */
+    height: 60px;
+    border-radius: 50%; /* ทำให้เป็นวงกลม */
+    border: none;
+    cursor: pointer;
+    
+    /* การจัดตำแหน่งและแสดงผล */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px auto; /* จัดกึ่งกลางด้านบน */
+    
+    /* สีและมิติ (สถานะเริ่มต้น: หยุดชั่วคราว/Pause) */
+    background-color: #f0f0f0; /* สีเทาอ่อน */
+    color: #1f2937; /* สีไอคอน */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* เพิ่มมิติ */
+    
+    /* ความนุ่มนวลในการเปลี่ยนสถานะ */
+    transition: all 0.3s ease-in-out;
 }
 
-.sound-toggle-button.is-playing {
+.ambient-play-pause-button:hover {
+    background-color: #e5e5e5; /* สว่างขึ้นเมื่อชี้ */
+    transform: scale(1.05); /* ขยายเล็กน้อยเมื่อชี้ */
+}
+
+/* ------------------------------------- */
+/* สไตล์ Active State (เมื่อเสียงกำลังเล่น) */
+/* ------------------------------------- */
+
+.ambient-play-pause-button.is-playing {
+    /* ใช้สีเขียว Active ที่คุณกำหนด */
     background-color: #34d399; /* Emerald 400 */
-    box-shadow: 0 0 10px rgba(52, 211, 153, 0.8);
+    color: #fff; /* สีไอคอนเป็นสีขาว */
+    
+    /* Shadow ที่เข้มข้นขึ้นและส่องสว่าง */
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.7), 
+                0 6px 15px rgba(0, 0, 0, 0.3); 
+    
+    /* แอนิเมชัน Pulse */
     animation: pulse 1.5s infinite;
 }
 
+/* กำหนด Keyframes สำหรับแอนิเมชัน pulse */
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 5px rgba(52, 211, 153, 0.8);
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
     }
-    50% {
-        box-shadow: 0 0 15px rgba(52, 211, 153, 1);
+    70% {
+        box-shadow: 0 0 0 12px rgba(52, 211, 153, 0);
     }
     100% {
-        box-shadow: 0 0 5px rgba(52, 211, 153, 0.8);
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
     }
+}
+
+/* สไตล์ไอคอนภายในปุ่ม (สมมติใช้ SVG Icon) */
+.ambient-play-pause-button svg {
+    width: 32px;
+    height: 32px;
 }
 
 
@@ -127,6 +172,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-bottom: 15px;
+    padding-top: 10px;
     flex-grow: 1; /* ให้ Grid ขยายเต็มพื้นที่ */
 }
 
