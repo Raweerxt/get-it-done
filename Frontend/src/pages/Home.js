@@ -79,7 +79,7 @@ const HomePage = ({
             {/* Main Content: Timer */}
             <main className="home-main-content">
                 <p className="welcome-text">Hello, {userName || 'User'}</p> 
-                <h1 className="homepage-title">This is Homepage Armageddon</h1>
+                <h1 className="homepage-title">Hurry Up, It's time to Get It Done!</h1>
                 
                 <div className="timer-display">
                     {currentTime || '00:00'} 

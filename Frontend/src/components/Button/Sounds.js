@@ -64,7 +64,7 @@ const AmbientSoundSelector = ({
                         {/* 🛑 ปุ่มควบคุม Play/Pause (เพิ่มมาเพื่อ UX) */}
                         <div className="sound-controls">
                             <button 
-                                className="play-pause-button" 
+                                className="ambient-play-pause-button" 
                                 onClick={togglePlayPause} 
                                 title={isPlaying ? 'Pause Sound' : 'Play Sound'}
                                 disabled={!isAnySoundSelected}
