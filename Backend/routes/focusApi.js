@@ -24,6 +24,49 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
+// 1. แปลง durationMinutes (float) เป็นรูปแบบ HH:MM:SS
+const formatDuration = (duration) => {
+    // แปลงจาก Minutes (float) เป็น Seconds (integer)
+    const totalSeconds = Math.round(duration * 60); 
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    // PadStart เพื่อให้มี 2 หลักเสมอ (01:05:07)
+    const pad = (num) => String(num).padStart(2, '0');
+
+    // รูปแบบ 01:30:30
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+};
+
+// 2. แปลง UTC timestamp เป็น Thai Time (GMT+7) และจัดรูปแบบ
+const formatThaiTime = (utcDate) => {
+    const date = new Date(utcDate);
+    
+    // ตั้งค่าตัวเลือกการจัดรูปแบบสำหรับเวลาประเทศไทย
+    const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false, // ใช้รูปแบบ 24 ชั่วโมง
+        timeZone: 'Asia/Bangkok' // ไทม์โซนประเทศไทย (GMT+7)
+    };
+
+    // ใช้ 'en-GB' เพื่อให้ได้รูปแบบ DD/MM/YYYY
+    const thaiTimeStr = date.toLocaleString('en-GB', options); 
+    
+    // จัดรูปแบบผลลัพธ์ให้เป็น YYYY/MM/DD, HH:MM:SS
+    // 'en-GB' จะได้ "DD/MM/YYYY, HH:MM:SS"
+    const parts = thaiTimeStr.split(', ');
+    const [day, month, year] = parts[0].split('/');
+    
+    return `${year}/${month}/${day}, ${parts[1]}`;
+};
+
 // =============================================
 // 1. API สำหรับ "บันทึก" เวลา (จากหน้า Focus.js)
 // (POST /api/v1/focus-sessions)
@@ -54,6 +97,37 @@ router.post('/focus-sessions', authMiddleware, async (req, res) => {
     }
 });
 
+// =============================================
+// 🆕 API สำหรับ "ดึงรายการ" Session ทั้งหมด พร้อมจัดรูปแบบ
+// (GET /api/v1/focus-sessions/list)
+// =============================================
+router.get('/focus-sessions/list', authMiddleware, async (req, res) => {
+    const { id: userId } = req.user;
+
+    try {
+        // ดึงข้อมูลทั้งหมด
+        const sessions = await prisma.focusSession.findMany({
+            where: { userId: userId },
+            orderBy: { createdAt: 'desc' } // ล่าสุดอยู่บนสุด
+        });
+
+        // ✅ วนลูปเพื่อแปลงค่าตามที่ต้องการ
+        const formattedSessions = sessions.map(session => ({
+            ...session,
+            // 1. แปลง durationMinutes เป็น HH:MM:SS
+            durationFormatted: formatDuration(session.durationMinutes), 
+            
+            // 2. แปลง createdAt เป็น Thai Time (GMT+7)
+            createdAtThai: formatThaiTime(session.createdAt), 
+        }));
+
+        res.status(200).json(formattedSessions);
+
+    } catch (error) {
+        console.error("Error fetching sessions:", error);
+        res.status(500).json({ message: 'Failed to fetch focus sessions' });
+    }
+});
 
 // =============================================
 // 2. API สำหรับหน้าสถิติ: "Total time spent" (ซ้ายล่าง)
@@ -93,11 +167,16 @@ router.get('/stats/total', authMiddleware, async (req, res) => {
 router.get('/stats/weekly', authMiddleware, async (req, res) => {
     const { id: userId } = req.user;
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // 🛑 [ปรับแก้ 1] ใช้ Date.now() เพื่อคำนวณเวลาเริ่มต้น/สิ้นสุดของวันนี้ใน UTC
+    const now = new Date();
+    
+    // 🛑 [ปรับแก้ 2] คำนวณขอบเขตเวลาของวันนี้ใน UTC
+    // วันที่เริ่มต้นของวันนี้ใน UTC
+    const todayUTCStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0)); 
 
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6); // 6 วันที่แล้ว + วันนี้ = 7 วัน
+    // วันที่ 7 วันย้อนหลังใน UTC (รวมวันนี้เป็น 7 วัน)
+    const sevenDaysAgoUTCStart = new Date(todayUTCStart);
+    sevenDaysAgoUTCStart.setUTCDate(todayUTCStart.getUTCDate() - 6); 
 
     try {
         // 1. ดึงข้อมูลดิบ 7 วันย้อนหลัง (ด้วย Prisma)
@@ -105,7 +184,7 @@ router.get('/stats/weekly', authMiddleware, async (req, res) => {
             where: {
                 userId: userId,
                 createdAt: {
-                    gte: sevenDaysAgo, // gte = Greater than or equal
+                    gte: sevenDaysAgoUTCStart, // ใช้เวลาเริ่มต้น 7 วันย้อนหลังแบบ UTC
                 }
             },
             select: {
@@ -120,18 +199,22 @@ router.get('/stats/weekly', authMiddleware, async (req, res) => {
         
         // 3. (Process ใน JS) วนลูป 7 วันเพื่อสร้างข้อมูลตั้งต้น
         for (let i = 0; i < 7; i++) {
-            const d = new Date(sevenDaysAgo);
-            d.setDate(sevenDaysAgo.getDate() + i);
+            const d = new Date(sevenDaysAgoUTCStart);
+            d.setUTCDate(sevenDaysAgoUTCStart.getUTCDate() + i);
             
-            const dayKey = d.toISOString().split('T')[0]; // format YYYY-MM-DD
-            const dayName = dayLabels[d.getUTCDay()]; // 'Sun', 'Mon', ...
+            // 🛑 [ปรับแก้ 3] ใช้ getUTCFullYear/Month/Date เพื่อสร้าง Key ที่อ้างอิง UTC
+            const dayKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+            const dayName = dayLabels[d.getUTCDay()]; 
             
             weeklyDataMap.set(dayKey, { day: dayName, hours: 0 });
         }
 
         // 4. (Process ใน JS) เติมข้อมูลจาก DB
         sessions.forEach(session => {
-            const sessionDateKey = session.createdAt.toISOString().split('T')[0];
+            // 🛑 [ปรับแก้ 4] ใช้ getUTCFullYear/Month/Date เพื่อสร้าง Key จากข้อมูล DB (ซึ่งเป็น UTC)
+            const d = session.createdAt;
+            const sessionDateKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+            
             if (weeklyDataMap.has(sessionDateKey)) {
                 const dayData = weeklyDataMap.get(sessionDateKey);
                 dayData.hours += (session.durationMinutes / 60);
@@ -241,15 +324,15 @@ router.get('/statistics', authMiddleware, async (req, res) => {
         const totalTimeAllTimeMinutes = totalResult._sum.durationMinutes || 0;
 
         // --- 2. Logic ดึง Weekly (จาก /stats/weekly) [ปรับเล็กน้อย] ---
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const sevenDaysAgo = new Date(today);
-        sevenDaysAgo.setDate(today.getDate() - 6);
+        const now = new Date();
+        const todayUTCStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0)); 
+        const sevenDaysAgoUTCStart = new Date(todayUTCStart);
+        sevenDaysAgoUTCStart.setUTCDate(todayUTCStart.getUTCDate() - 6);
 
         const sessions = await prisma.focusSession.findMany({
             where: {
                 userId: userId,
-                createdAt: { gte: sevenDaysAgo }
+                createdAt: { gte: sevenDaysAgoUTCStart } // 👈 ใช้ UTC Start
             },
             select: { durationMinutes: true, createdAt: true }
         });
@@ -258,26 +341,28 @@ router.get('/statistics', authMiddleware, async (req, res) => {
         let weeklyDataMap = new Map();
 
         for (let i = 0; i < 7; i++) {
-            const d = new Date(sevenDaysAgo);
-            d.setDate(sevenDaysAgo.getDate() + i);
-            const dayKey = d.toISOString().split('T')[0];
+            const d = new Date(sevenDaysAgoUTCStart);
+            d.setUTCDate(sevenDaysAgoUTCStart.getUTCDate() + i);
+            
+            // 💡 ใช้ getUTCFullYear/Month/Date เพื่อสร้าง Key ที่อ้างอิง UTC
+            const dayKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
             const dayName = dayLabels[d.getUTCDay()]; 
             
-            // 🛑 [ปรับแก้] ให้เก็บ totalMinutes (React ต้องการอันนี้)
             weeklyDataMap.set(dayKey, { day: dayName, totalMinutes: 0 });
         }
 
         sessions.forEach(session => {
-            const sessionDateKey = session.createdAt.toISOString().split('T')[0];
+            // 💡 ใช้ getUTCFullYear/Month/Date เพื่อสร้าง Key จากข้อมูล DB (ซึ่งเป็น UTC)
+            const d = session.createdAt;
+            const sessionDateKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+            
             if (weeklyDataMap.has(sessionDateKey)) {
                 const dayData = weeklyDataMap.get(sessionDateKey);
-                // 🛑 [ปรับแก้] บวกค่า totalMinutes
                 dayData.totalMinutes += session.durationMinutes; 
                 weeklyDataMap.set(sessionDateKey, dayData);
             }
         });
         
-        // 🛑 [ปรับแก้] แปลง Map เป็น Array (React จะเอาไปหาร 60 เอง)
         const last7Days = Array.from(weeklyDataMap.values());
 
 
