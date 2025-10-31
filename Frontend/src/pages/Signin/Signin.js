@@ -44,7 +44,7 @@ const SigninPage = () => {
             
             // 🛑 Logic 3: บันทึกข้อมูลการเข้าสู่ระบบลงใน sessionStorage
             sessionStorage.setItem('token', data.token);
-            sessionStorage.setItem('userId', data.userId);
+            sessionStorage.setItem('userId', data.user.id);
             sessionStorage.setItem('username', username);
             
             navigate('/home'); 
