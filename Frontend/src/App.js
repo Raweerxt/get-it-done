@@ -99,7 +99,6 @@ const AppBody = () => {
     
     const audioRef = useRef(null); 
     
-    // ... (handleSoundSelect และ handleVolumeChange เหมือนเดิม) ...
     const handleSoundSelect = (soundOption) => {
         const { url } = soundOption;
         if (currentSoundUrl === url) {
@@ -149,21 +148,33 @@ const AppBody = () => {
         
     }, [backgroundKey, soundUrlKey, volumeKey, defaultBgUrl, firstSoundOption.url]);
 
-    // 🛑 useEffect สำหรับควบคุม Audio
+    // ----------------------------------------------------
+    // 🛑 3. useEffects สำหรับควบคุม Audio
+    // ----------------------------------------------------
+
+    // 🛑 A. useEffect สำหรับการโหลดเพลงและตั้งค่า Volume เริ่มต้น
+    // จะทำงานเมื่อ currentSoundUrl เปลี่ยนเท่านั้น
     useEffect(() => {
         if (!audioRef.current) {
+            // สร้าง Audio Object ครั้งแรก
             audioRef.current = new Audio(currentSoundUrl || ''); 
             audioRef.current.loop = true;
+            audioRef.current.volume = volume; // ตั้งค่า Volume เริ่มต้น
         }
         
-        if (audioRef.current) {
-            if (audioRef.current.src !== currentSoundUrl) {
-                audioRef.current.src = currentSoundUrl || '';
-                audioRef.current.load(); 
-            }
-            
-            audioRef.current.volume = volume;
+        // ถ้า URL เปลี่ยน ให้เปลี่ยน src และโหลดใหม่ (ซึ่งอาจทำให้เพลงหยุดชั่วคราว/รีเซ็ต)
+        if (audioRef.current.src !== currentSoundUrl) {
+            audioRef.current.src = currentSoundUrl || '';
+            audioRef.current.load(); 
+        }
+        
+    }, [currentSoundUrl]); 
 
+    
+    // 🛑 B. useEffect สำหรับควบคุมการเล่น/หยุด (Play/Pause)
+    // จะทำงานเมื่อ isPlaying หรือ currentSoundUrl เปลี่ยน
+    useEffect(() => {
+        if (audioRef.current) {
             if (isPlaying && currentSoundUrl) {
                 const playPromise = audioRef.current.play();
                 if (playPromise !== undefined) {
@@ -175,8 +186,17 @@ const AppBody = () => {
                 audioRef.current.pause();
             }
         }
-        
-    }, [currentSoundUrl, isPlaying, volume]); 
+    }, [isPlaying, currentSoundUrl]); 
+
+    
+    // 🛑 C. useEffect ใหม่! สำหรับควบคุมระดับเสียง (Volume) โดยเฉพาะ
+    // จะทำงานเมื่อ volume เปลี่ยนเท่านั้น และจะไม่เรียก .load() หรือ .play()
+    useEffect(() => {
+        if (audioRef.current) {
+            // ตั้งค่า Volume อย่างเดียว ไม่มีการ load() หรือ play()
+            audioRef.current.volume = volume; 
+        }
+    }, [volume]); // ✅ ขึ้นอยู่กับ volume เท่านั้น
 
     // Cleanup Audio Element
     useEffect(() => {
