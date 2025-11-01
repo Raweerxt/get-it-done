@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Streak.css'; 
-import backgroundImage from '../../assets/bg.png'; 
 import SettingsButton from '../../components/Button/Setting'; 
+import fireStreak from '../../assets/fireStreak.png';
 // นำเข้า Icon ที่จำเป็น (ลบ PaintBucket ออก)
 import { BookText, Home, Flame } from 'lucide-react'; 
 
@@ -220,7 +220,11 @@ const StreakPage = ({
                             </div>
                             
                             <div className="stats-card streak-card">
-                                <Flame size={48} color="#FF6B00" />
+                                <img
+                                    src={fireStreak}
+                                    alt="Streak Fire"
+                                    style={{ width: 42, height: 54, filter: 'drop-shadow(0 0 0 #FF6B00)' }}
+                                />
                                 <span className="stats-card-value">{streak}</span>
                             </div>
 
