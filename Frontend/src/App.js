@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Image, Volume2 } from 'lucide-react'; // 🛑 Import Icon สำหรับปุ่มควบคุม
+import { Image, Volume2 } from 'lucide-react';
 
 // Import หน้า Component
 import SigninPage from './pages/Signin/Signin'; 
@@ -26,12 +26,12 @@ const getUserId = () => {
 //  ฟังก์ชันช่วยสร้าง Key ที่ผูกกับ User ID
 const getStorageKey = (baseKey) => {
     const userId = getUserId();
-    // ถ้ามี userId ให้ใช้ key ที่ผูกกับ user, ถ้าไม่มีให้ใช้ key ธรรมดา (สำหรับ Guest/Default)
+    // ถ้ามี userId ให้ใช้ key ที่ผูกกับ user, ถ้าไม่มีให้ใช้ key ธรรมดา สำหรับ Guest/Default
     return userId ? `${baseKey}_${userId}` : baseKey; 
 };
 
 
-// 🛑 Component สำหรับป้องกันการเข้าถึงหน้าถ้ายังไม่ได้ Login
+// Component สำหรับป้องกันการเข้าถึงหน้าถ้ายังไม่ได้ Login
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('token'); 
   if (!isAuthenticated) {
@@ -40,7 +40,7 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// 🛑 Component สำหรับป้องกันไม่ให้เข้าหน้า Login/Signup ซ้ำซ้อน
+// Component สำหรับป้องกันไม่ให้เข้าหน้า Login/Signup ซ้ำซ้อน
 const AuthRoute = ({ children }) => {
   const isAuthenticated = sessionStorage.getItem('token'); 
   if (isAuthenticated) {
@@ -49,10 +49,10 @@ const AuthRoute = ({ children }) => {
   return children;
 };
 
-// 🛑 Component หลักที่มี Logic และ Hooks ทั้งหมด (ต้องอยู่ภายใน BrowserRouter)
+// Component หลักที่มี Logic และ Hooks ทั้งหมด (ต้องอยู่ภายใน BrowserRouter)
 const AppBody = () => {
 
-    // 🛑 ใช้ useLocation เพื่อตรวจสอบเส้นทางปัจจุบัน
+    //  ใช้ useLocation เพื่อตรวจสอบเส้นทางปัจจุบัน
     const location = useLocation();
     
     // 💡 กำหนดเส้นทางที่ไม่ต้องการให้แสดงปุ่มควบคุม
@@ -63,9 +63,7 @@ const AppBody = () => {
     const soundUrlKey = getStorageKey('selectedSoundUrl');
     const volumeKey = getStorageKey('ambientVolume');
 
-    // ----------------------------------------------------
-    // 🛑 1. BACKGROUND STATE & LOGIC
-    // ----------------------------------------------------
+    // BACKGROUND STATE & LOGIC
     const defaultBgUrl = defaultBackgroundImage;
     const [currentBackground, setCurrentBackground] = useState(() => {
         return localStorage.getItem(backgroundKey) || defaultBgUrl;
@@ -77,19 +75,16 @@ const AppBody = () => {
         localStorage.setItem(backgroundKey, bgUrl);
     };
     
-    // ----------------------------------------------------
-    // 🛑 2. SOUND STATE & LOGIC
-    // ----------------------------------------------------
-    
-    // ✅ 1. ต้องประกาศตัวแปรนี้ก่อนที่จะนำไปใช้ใน useState ของ currentSoundUrl
+    // SOUND STATE & LOGIC
+    // ต้องประกาศตัวแปรนี้ก่อนที่จะนำไปใช้ใน useState ของ currentSoundUrl
     const firstSoundOption = soundOptions && soundOptions.length > 0 ? soundOptions[0] : { url: null, name: null };
     
-    // ✅ 2. ประกาศ State หลักสำหรับ URL เสียง
+    // ประกาศ State หลักสำหรับ URL เสียง
     const [currentSoundUrl, setCurrentSoundUrl] = useState(() => {
        return localStorage.getItem(soundUrlKey) || firstSoundOption.url;
     });
     
-    // 3. State/Ref อื่นๆ
+    // State/Ref อื่นๆ
     const [volume, setVolume] = useState(() => {
         const storedVolume = localStorage.getItem(volumeKey);
         return storedVolume !== null ? parseFloat(storedVolume) : 0.5;
@@ -117,7 +112,7 @@ const AppBody = () => {
     };
 
 
-    // 🛑 Effect สำหรับใช้พื้นหลัง
+    // Effect สำหรับใช้พื้นหลัง
     useEffect(() => {
         document.documentElement.style.backgroundImage = `url(${currentBackground})`;
         document.documentElement.style.backgroundSize = 'cover';
@@ -148,12 +143,9 @@ const AppBody = () => {
         
     }, [backgroundKey, soundUrlKey, volumeKey, defaultBgUrl, firstSoundOption.url]);
 
-    // ----------------------------------------------------
-    // 🛑 3. useEffects สำหรับควบคุม Audio
-    // ----------------------------------------------------
+    // useEffects สำหรับควบคุม Audio
 
-    // 🛑 A. useEffect สำหรับการโหลดเพลงและตั้งค่า Volume เริ่มต้น
-    // จะทำงานเมื่อ currentSoundUrl เปลี่ยนเท่านั้น
+    // useEffect สำหรับการโหลดเพลงและตั้งค่า Volume เริ่มต้น จะทำงานเมื่อ currentSoundUrl เปลี่ยนเท่านั้น
     useEffect(() => {
         if (!audioRef.current) {
             // สร้าง Audio Object ครั้งแรก
@@ -162,7 +154,7 @@ const AppBody = () => {
             audioRef.current.volume = volume; // ตั้งค่า Volume เริ่มต้น
         }
         
-        // ถ้า URL เปลี่ยน ให้เปลี่ยน src และโหลดใหม่ (ซึ่งอาจทำให้เพลงหยุดชั่วคราว/รีเซ็ต)
+        // ถ้า URL เปลี่ยน ให้เปลี่ยน src และโหลดใหม่ อาจทำให้เพลงหยุดชั่วคราว/รีเซ็ต
         if (audioRef.current.src !== currentSoundUrl) {
             audioRef.current.src = currentSoundUrl || '';
             audioRef.current.load(); 
@@ -171,8 +163,7 @@ const AppBody = () => {
     }, [currentSoundUrl]); 
 
     
-    // 🛑 B. useEffect สำหรับควบคุมการเล่น/หยุด (Play/Pause)
-    // จะทำงานเมื่อ isPlaying หรือ currentSoundUrl เปลี่ยน
+    // useEffect สำหรับควบคุมการเล่น/หยุด (Play/Pause) จะทำงานเมื่อ isPlaying หรือ currentSoundUrl เปลี่ยน
     useEffect(() => {
         if (audioRef.current) {
             if (isPlaying && currentSoundUrl) {
@@ -189,14 +180,13 @@ const AppBody = () => {
     }, [isPlaying, currentSoundUrl]); 
 
     
-    // 🛑 C. useEffect ใหม่! สำหรับควบคุมระดับเสียง (Volume) โดยเฉพาะ
-    // จะทำงานเมื่อ volume เปลี่ยนเท่านั้น และจะไม่เรียก .load() หรือ .play()
+    // useEffect ใหม่! สำหรับควบคุมระดับเสียง (Volume) โดยเฉพาะ จะทำงานเมื่อ volume เปลี่ยนเท่านั้น และจะไม่เรียก .load() หรือ .play()
     useEffect(() => {
         if (audioRef.current) {
             // ตั้งค่า Volume อย่างเดียว ไม่มีการ load() หรือ play()
             audioRef.current.volume = volume; 
         }
-    }, [volume]); // ✅ ขึ้นอยู่กับ volume เท่านั้น
+    }, [volume]); // ขึ้นอยู่กับ volume เท่านั้น
 
     // Cleanup Audio Element
     useEffect(() => {
@@ -208,13 +198,11 @@ const AppBody = () => {
     }, []);
 
 
-    // ----------------------------------------------------
-    // 🛑 3. RENDER: Controls, Modal และ Routes
-    // ----------------------------------------------------
+    // RENDER: Controls, Modal และ Routes
     
     const isAnySoundSelected = !!currentSoundUrl;
 
-    // 💡 ฟังก์ชันควบคุมการเปิด Modal เพื่อให้ Modal หนึ่งปิดเมื่ออีก Modal ถูกเปิด
+    // ฟังก์ชันควบคุมการเปิด Modal เพื่อให้ Modal หนึ่งปิดเมื่ออีก Modal ถูกเปิด
     const toggleModal = (modalName) => {
         if (modalName === 'bg') {
             setIsBgModalOpen(prev => !prev);
@@ -228,12 +216,11 @@ const AppBody = () => {
     return (
         <div className="App"> 
             
-            {/* 🛑 CONDITIONAL RENDERING: แสดงเฉพาะเมื่อ shouldShowControls เป็น true */}
+            {/* CONDITIONAL RENDERING: แสดงเฉพาะเมื่อ shouldShowControls เป็น true */}
             {shouldShowControls && (
                 <div className="utility-fixed-container">
                     
-                    {/* 🛑 ปุ่มควบคุมรวมกันที่นี่ (Footer Icons) */}
-                    {/* 💡 Note: สลับตำแหน่งไอคอนเพื่อให้ Volume2 อยู่ซ้าย และ Image อยู่ขวา */}
+                    {/* Footer Icons */}
                     <div className="app-global-controls" style={{ display: 'flex', gap: '10px' }}>
                         
                         {/* ปุ่ม Sound Button */}
@@ -255,7 +242,7 @@ const AppBody = () => {
                         </button>
                     </div>
 
-                    {/* 🛑 Modal Controls (แสดงผลเมื่อถูกเปิด) */}
+                    {/* Modal Controls (แสดงผลเมื่อถูกเปิด) */}
                     
                     {/* Modal Background */}
                     <BackgroundButton
@@ -296,9 +283,9 @@ const AppBody = () => {
 };
 
 
-// 🛑 Component App หลักที่ Export ออกไป (ห่อด้วย BrowserRouter)
+// Component App หลักที่ Export ออกไป (ห่อด้วย BrowserRouter)
 const App = () => {
-    // 💡 สร้าง Key ที่เปลี่ยนเมื่อมีการล็อกอิน/ล็อกเอาต์
+    // สร้าง Key ที่เปลี่ยนเมื่อมีการล็อกอิน/ล็อกเอาต์
     // ใช้ 'token' เป็นตัวบ่งชี้การล็อกอิน หรือใช้ 'guest' หากยังไม่ได้ล็อกอิน
     const sessionKey = sessionStorage.getItem('token') || 'guest';
     return (

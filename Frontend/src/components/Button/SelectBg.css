@@ -1,35 +1,18 @@
-/* fileName: SelectBg.css */
-
-/* ------------------------------------- */
-/* 1. Positioning the Modal (LEFT-BOTTOM FIXED) */
-/* ------------------------------------- */
-
-/* Modal Wrapper ต้องเป็น position: absolute สัมพันธ์กับ utility-fixed-container */
+/* Positioning the Modal (LEFT-BOTTOM FIXED) */
 .bg-selector-modal-wrapper {
-    position: absolute; 
-    /* 💡 ตำแหน่ง: วาง Modal ให้แสดงผลอยู่ด้านบนของปุ่มตัวเอง (Background Button)
-       โดยให้ด้านล่างของ Modal อยู่ที่ขอบบนของปุ่ม */
-    bottom: 50px; /* 50px คือความสูงของปุ่ม + margin เล็กน้อย */
-    
-    /* 🛑 NEW: ขยับไปทางขวาเพื่อให้ Modal Background อยู่ถัดจาก Modal Sound */
-    left: 50px; 
-    /* Sound Modal อยู่ที่ left: 0, ดังนั้น Background Modal ควรอยู่ถัดไป */
-
-    /* รีเซ็ต Padding เดิม */
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
     padding-left: 0; 
     padding-bottom: 0;
 }
-
-
-/* ------------------------------------- */
-/* 2. Modal Styling */
-/* ------------------------------------- */
+/* Modal Styling */
 .bg-selector-modal {
-    width: 320px; /* เพิ่มความกว้างเล็กน้อยเพื่อให้ Grid 3 คอลัมน์ดูดี */
+    width: 320px;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    padding: 15px 20px 20px 20px; /* ปรับ Padding */
+    padding: 15px 20px 20px 20px;
     display: flex;
     flex-direction: column;
     color: #333; 
@@ -37,12 +20,10 @@
     max-height: 80vh; 
     overflow-y: auto;
     
-    /* 💡 Animation: สไลด์ขึ้นจากตำแหน่งของปุ่ม */
     transform-origin: bottom left;
     animation: slideInBottom 0.3s ease-out; 
 }
 
-/* นำ Animation จาก Sounds.css มาใช้ซ้ำ */
 @keyframes slideInBottom {
     from {
         opacity: 0;
@@ -55,7 +36,7 @@
 }
 
 
-/* ปุ่มปิด Modal (X icon) */
+/* ปุ่มปิด Modal */
 .close-button {
     position: absolute;
     top: 10px;
@@ -73,7 +54,7 @@
     background-color: #f0f0f0;
 }
 
-/* Modal Header/Title (ให้ Sticky) */
+/* Modal Header/Title ให้ Sticky */
 .modal-title {
     font-size: 1.2rem;
     font-weight: 700;
@@ -83,23 +64,19 @@
     margin-bottom: 5px; 
     border-bottom: 1px solid #ddd;
     
-    /* 🛑 ทำให้ Title เป็น Sticky ด้านบนสุด */
+    /* ทำให้ Title เป็น Sticky ด้านบนสุด */
     position: sticky; 
-    top: -20px; /* ชดเชยด้วยค่าลบของ padding-top ของ Modal */
+    top: -20px;
     background-color: white; 
     z-index: 10; 
-    padding-top: 20px; /* เพิ่ม padding-top ชดเชย */
-    margin-right: -20px; /* ชดเชย padding ด้านข้างของ modal */
+    padding-top: 20px;
+    margin-right: -20px;
     padding-right: 20px;
     margin-left: -20px;
     padding-left: 20px;
 }
 
-
-/* ------------------------------------- */
-/* 3. Background Grid & Options */
-/* ------------------------------------- */
-
+/* Background Grid & Options */
 .background-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ */
@@ -118,16 +95,15 @@
 }
 
 .background-option:hover .bg-preview-container {
-    box-shadow: 0 0 0 3px #34d399; /* Highlight on hover */
+    box-shadow: 0 0 0 3px #34d399;
 }
 
 .background-option.active .bg-preview-container {
-    box-shadow: 0 0 0 3px #10b981; /* Stronger highlight on active (Emerald 500) */
+    box-shadow: 0 0 0 3px #10b981;
 }
 
 .bg-preview-container {
     width: 100%;
-    /* 🛑 เปลี่ยนเป็น aspect-ratio เพื่อกำหนดสัดส่วนที่ชัดเจนขึ้น */
     aspect-ratio: 4/3; 
     border-radius: 6px;
     overflow: hidden;
@@ -149,7 +125,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(16, 185, 129, 0.5); /* Overlay สีเขียวโปร่งแสง */
+    background-color: rgba(16, 185, 129, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;

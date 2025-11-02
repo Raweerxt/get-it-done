@@ -1,4 +1,3 @@
-/* General container setup */
 .focus-page-container {
     height: 100vh; 
     min-height: 100vh;
@@ -46,7 +45,6 @@
   justify-content: center;
   flex-grow: 1;
   text-align: center;
-  /* 🛑 FIX: ยกเนื้อหาขึ้น */
   margin-top: -85px; 
 }
 .session-indicator { font-size: 1.2rem; margin-bottom: 0rem; opacity: 0.8; }
@@ -87,17 +85,15 @@
 /* Timer Display */
 .timer-display { display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
 
-/* 🛑 FIX: ลบพื้นที่ปุ่มลูกศรออก */
 .time-adjust-left, .time-adjust-right {
     width: 0; 
     padding: 0;
     margin: 0;
 }
-/* 🛑 FIX: ลบปุ่มลูกศรออกทั้งหมด */
 .time-adjust-button { display: none; }
 
 
-/* 🛑 NEW: Styling สำหรับ Input Time (HH:MM:SS) */
+/* Styling สำหรับ Input Time (HH:MM:SS) */
 .timer-input-wrapper {
     cursor: pointer; 
     display: flex;
@@ -114,7 +110,6 @@
 }
 
 .time-input-field {
-    /* สไตล์เมื่ออยู่ในโหมดแก้ไข */
     background: rgba(255, 255, 255, 0.1); 
     border: 2px solid rgba(255, 255, 255, 0.5); 
     border-radius: 8px;
@@ -129,7 +124,6 @@
     outline: none;
     transition: background 0.2s ease, border-color 0.2s ease;
     
-    /* ซ่อนลูกศรขึ้น/ลง ของ input type="number" */
     -moz-appearance: textfield; 
 }
 .time-input-field:focus {
@@ -150,7 +144,7 @@
     margin: 0 5px; 
 }
 
-/* ปรับ timer-digits ให้มีขนาดที่เหมาะสมสำหรับ HH:MM:SS และใช้พื้นที่เต็ม */
+/* timer-digits */
 .timer-digits { 
     font-size: 8rem; 
     font-weight: bold; 

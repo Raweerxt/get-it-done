@@ -1,19 +1,16 @@
 .streak-page-container {
-    /* 🛑 แก้ไข: ใช้ความสูงเต็ม viewport และซ่อน scroll bar ถ้าจำเป็น */
-    height: 100vh; /* ใช้ 100% ของความสูงหน้าจอ */
+    height: 100vh;
     min-height: 100vh;
-    width: 100vw; /* ใช้ 100% ของความกว้างหน้าจอ */
+    width: 100vw;
     
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     
-    /* 🛑 ลด padding หรือลบออกเพื่อลดโอกาสเกิด Scroll Bar */
-    padding: 0; /* ลบ padding หลักออก */
     
     position: relative;
-    overflow: hidden; /* ซ่อน Scroll Bar ในกรณีที่เนื้อหาเกินเล็กน้อย */
+    overflow: hidden;
     
     background-size: cover;
     background-position: center;
@@ -23,28 +20,24 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* --- 2. Header (ส่วน Logo และ Quote) --- */
+/* Header ส่วน Logo และ Quote */
 .streak-header {
     position: absolute;
     top: 0;
     width: 100%;
-    /* 🛑 เพิ่ม padding ด้านข้างและด้านบนเท่านั้น */
     padding: 1.5rem 2rem;
     display: flex;
-    justify-content: space-between; /* ให้ชิดซ้ายและชิดขวา */
+    justify-content: space-between;
     align-items: flex-start;
     color: rgba(255, 255, 255, 0.9);
     
-    /* ลบ max-width และ margin ออกไปเพื่อให้ header ชิดขอบจริงๆ */
     max-width: 1800px;
-    /* margin: 0 auto; */
 }
 
 .app-branding {
     font-size: 2rem;
     font-weight: 700;
     padding: 0 20px;
-    /* 🛑 (ชิดมุมบนซ้ายแล้ว) */
 }
 
 .app-subtitle {
@@ -61,7 +54,6 @@
     margin: 0;
     padding: 0 20px;
     font-weight: 400;
-    /* 🛑 (ชิดมุมบนขวาแล้ว) */
 }
 
 .app-quote p {
@@ -69,29 +61,21 @@
     padding: 0;
 }
 
-/* --- 3. Main Content (ส่วนเนื้อหากลางหน้า) --- */
+/* Main Content */
 .streak-main-content {
-    /* 🛑 (สำคัญ)
-       ใช้ padding เพื่อดันเนื้อหาไม่ให้ชน Header/Footer
-       แต่ให้ตัวกล่องสถิติอยู่ตรงกลาง
-    */
-    padding-top: 100px;  /* เว้นที่ให้ Header */
-    padding-bottom: 100px; /* เว้นที่ให้ Footer */
+    padding-top: 100px;
+    padding-bottom: 100px;
     
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     
-    /* 🛑 (สำคัญ)
-       เพื่อให้เนื้อหา (กล่องสถิติ) ที่สูงเกินหน้าจอ 
-       สามารถ scroll ได้เฉพาะส่วนนี้ (ถ้าจำเป็น)
-    */
-    flex-grow: 1; /* ให้มันยืดเต็มพื้นที่ที่เหลือ */
-    overflow-y: auto; /* มี scrollbar อัตโนมัติถ้าเนื้อหาล้น */
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
-/* (A) กล่องเนื้อหาหลัก (พื้นหลังเบลอ) */
+/* กล่องเนื้อหาหลัก */
 .stats-content-box {
     background-color: rgb(255, 255, 255);
     border-radius: 20px;
@@ -99,19 +83,18 @@
     
     height: 80%;
     width: 90%;
-    max-width: 800px; /* จำกัดความกว้างสูงสุดของกล่อง */
+    max-width: 800px;
     
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* ระยะห่างระหว่าง Title, Graph, Summary */
-    color: #333; /* 🛑 เปลี่ยนสีตัวอักษรในกล่องให้เป็นสีเข้ม */
-    text-shadow: none; /* 🛑 ลบเงาตัวอักษรในกล่อง */
+    gap: 1.5rem;
+    color: #333;
+    text-shadow: none;
 }
 
-/* Title "Statistics" */
 .stats-title {
     font-size: 2.5rem;
     font-weight: 700;
@@ -120,25 +103,20 @@
     margin: 0;
 }
 
-/* (B) ส่วนของกราฟ */
+/* กราฟ */
 .stats-chart-wrapper {
     width: 100%;
-    /* 🛑 สำคัญสำหรับ Chart.js
-       เราต้องกำหนดความสูงให้มันตรงนี้ 
-       (ใน .js เราใส่ style={{ height: '300px' }} ไว้แล้ว
-       แต่ใส่ในนี้ด้วยก็ได้เผื่อลืม)
-    */
     height: 300px; 
     min-height: 250px;
 }
 
-/* (C) ส่วนสรุปด้านล่าง (Total time + Streak) */
+/* Total time + Streak */
 .stats-summary-wrapper {
     display: flex;
     justify-content: space-around;
     align-items: center;
     gap: 1rem;
-    flex-wrap: wrap; /* เผื่อหน้าจอแคบ */
+    flex-wrap: wrap;
 }
 
 .stats-card {
@@ -166,7 +144,7 @@
     color: #222;
 }
 
-/* การ์ด Streak (ขวา) */
+/* การ์ด Streak ด้านขวา */
 .streak-card {
     display: flex;
     align-items: center;
@@ -179,8 +157,6 @@
     color: #FF67D9; 
 }
 
-
-/* --- 5. Loading / Error States --- */
 .stats-loading,
 .stats-error {
     font-size: 1.5rem;
@@ -192,11 +168,11 @@
 }
 
 .stats-error {
-    color: #FFD2D2; /* สีแดงอ่อน */
-    background-color: rgba(139, 0, 0, 0.5); /* สีแดงเข้ม */
+    color: #FFD2D2;
+    background-color: rgba(139, 0, 0, 0.5);
 }
 
-/* --- 4. Footer (ส่วน Icon Bar) --- */
+/* Footer */
 .streak-footer {
     position: absolute;
     bottom: 0;
@@ -206,10 +182,7 @@
     justify-content: space-between;
     align-items: center;
     color: rgba(255, 255, 255, 0.9);
-    
-    /*background-color: rgba(0, 0, 0, 0.1);*/
-    /* backdrop-filter: blur(4px); 
-    -webkit-backdrop-filter: blur(4px); */
+
 }
 
 .footer-icons {

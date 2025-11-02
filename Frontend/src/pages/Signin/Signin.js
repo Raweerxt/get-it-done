@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 
-import './Signin.css'; 
-// 🛑 แก้ไข Path รูปภาพ: สมมติว่า assets อยู่เหนือ Folder ของ Signin.js
+import './Signin.css';
 import backgroundImage from '../../assets/bg.png';
 import logoImage from '../../assets/logoGetitdone.png';
 
@@ -14,7 +13,7 @@ const SigninPage = () => {
 
   const navigate = useNavigate(); 
 
-  // 🛑 Logic 1: ถ้ามี token แล้ว ให้เด้งไปหน้า Home (ใช้ sessionStorage)
+  // ถ้ามี token แล้ว ให้เด้งไปหน้า Home (ใช้ sessionStorage)
   useEffect(() => {
       const token = sessionStorage.getItem('token');
       if (token) {
@@ -28,7 +27,7 @@ const SigninPage = () => {
     setLoading(true);
 
     try {
-        // 🛑 Logic 2: เชื่อมต่อ Backend ที่ Port 5000 (สอดคล้องกับ server)
+        // เชื่อมต่อ Backend (สอดคล้องกับ server)
         const response = await fetch('/api/auth/login', { 
             method: 'POST',
             headers: {
@@ -42,7 +41,7 @@ const SigninPage = () => {
         if (response.ok) {
             console.log('Signin Successful:', data);
             
-            // 🛑 Logic 3: บันทึกข้อมูลการเข้าสู่ระบบลงใน sessionStorage
+            // บันทึกข้อมูลการเข้าสู่ระบบลงใน sessionStorage
             sessionStorage.setItem('token', data.token);
             sessionStorage.setItem('userId', data.user.id);
             sessionStorage.setItem('username', username);
@@ -60,7 +59,6 @@ const SigninPage = () => {
     }
   };
 
-  // 🛑 UI Component: ใช้ Layout 2 Panel เดิม
   return (
     <div className="login-page">
       {/* Left Panel: Background */}

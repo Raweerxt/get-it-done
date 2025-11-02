@@ -1,57 +1,37 @@
-/* ------------------------------------- */
-/* 0. Footer Button (ใช้ร่วมกับ Home/Focus/Streak) */
-/* ------------------------------------- */
-/* ใช้คลาส Active ที่คุณกำหนดไว้ */
-/* ------------------------------------- */
-/* สไตล์สำหรับปุ่ม Play/Pause ใน Ambient Sounds */
-/* ------------------------------------- */
-
 .ambient-play-pause-button {
-    /* ขนาดและรูปร่าง */
-    width: 60px; /* ขนาดใหญ่ขึ้นเล็กน้อย */
+    width: 60px;
     height: 60px;
-    border-radius: 50%; /* ทำให้เป็นวงกลม */
+    border-radius: 50%;
     border: none;
     cursor: pointer;
     
-    /* การจัดตำแหน่งและแสดงผล */
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 10px auto; /* จัดกึ่งกลางด้านบน */
+    margin: 0 auto 10px auto;
     
-    /* สีและมิติ (สถานะเริ่มต้น: หยุดชั่วคราว/Pause) */
-    background-color: #f0f0f0; /* สีเทาอ่อน */
-    color: #1f2937; /* สีไอคอน */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* เพิ่มมิติ */
+    background-color: #f0f0f0;
+    color: #1f2937;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     
-    /* ความนุ่มนวลในการเปลี่ยนสถานะ */
     transition: all 0.3s ease-in-out;
 }
 
 .ambient-play-pause-button:hover {
-    background-color: #e5e5e5; /* สว่างขึ้นเมื่อชี้ */
-    transform: scale(1.05); /* ขยายเล็กน้อยเมื่อชี้ */
+    background-color: #e5e5e5;
+    transform: scale(1.05);
 }
 
-/* ------------------------------------- */
-/* สไตล์ Active State (เมื่อเสียงกำลังเล่น) */
-/* ------------------------------------- */
-
+/* สไตล์ Active State เมื่อเสียงกำลังเล่น */
 .ambient-play-pause-button.is-playing {
-    /* ใช้สีเขียว Active ที่คุณกำหนด */
-    background-color: #34d399; /* Emerald 400 */
-    color: #fff; /* สีไอคอนเป็นสีขาว */
+    color: #fff;
     
-    /* Shadow ที่เข้มข้นขึ้นและส่องสว่าง */
     box-shadow: 0 0 20px rgba(52, 211, 153, 0.7), 
                 0 6px 15px rgba(0, 0, 0, 0.3); 
     
-    /* แอนิเมชัน Pulse */
     animation: pulse 1.5s infinite;
 }
 
-/* กำหนด Keyframes สำหรับแอนิเมชัน pulse */
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
@@ -64,27 +44,21 @@
     }
 }
 
-/* สไตล์ไอคอนภายในปุ่ม (สมมติใช้ SVG Icon) */
 .ambient-play-pause-button svg {
     width: 32px;
     height: 32px;
 }
 
 
-/* ------------------------------------- */
-/* 1. Positioning the Modal (LEFT-BOTTOM FIXED) */
-/* ------------------------------------- */
-/* 💡 CSS ใหม่สำหรับปุ่มที่ Fixed Position ใน App.js */
+/* Positioning the Modal */
 .sound-selector-modal-wrapper-fixed {
-    /* จัดตำแหน่งให้อยู่ด้านซ้ายล่างเหนือปุ่ม */
     position: absolute; 
-    bottom: 50px; /* สูงกว่าปุ่ม 50px */
+    bottom: 50px;
     left: 0px; 
     padding-left: 0; 
     padding-bottom: 0;
 }
 
-/* 🛑 CSS เดิม (สำหรับปุ่มที่อยู่ใน Footer ของหน้าย่อย) - ไม่ใช้แล้วแต่เก็บไว้เผื่ออนาคต */
 .sound-selector-modal-wrapper {
     position: absolute; 
     bottom: 50px; 
@@ -94,15 +68,12 @@
 }
 
 
-/* ------------------------------------- */
-/* 2. Modal Styling */
-/* ------------------------------------- */
+/* Modal Styling */
 .sound-selector-modal {
     width: 260px;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    /* 🛑 ลบ padding-bottom ออกเพื่อไม่ให้เกิดพื้นที่ว่างใต้ Volume Control */
     padding: 15px 15px 0 15px; 
     display: flex;
     flex-direction: column;
@@ -111,12 +82,10 @@
     max-height: 80vh; 
     overflow-y: auto;
     
-    /* 💡 เปลี่ยน Animation ให้สไลด์ขึ้นจากมุมซ้ายล่าง */
     transform-origin: bottom left;
     animation: slideInBottom 0.3s ease-out; 
 }
 
-/* 💡 Animation ใหม่: slideInBottom */
 @keyframes slideInBottom {
     from {
         opacity: 0;
@@ -129,7 +98,7 @@
 }
 
 
-/* ปุ่มปิด Modal (X icon) */
+/* ปุ่มปิด X */
 .close-button {
     position: absolute;
     top: 10px;
@@ -140,20 +109,20 @@
     padding: 5px;
     border-radius: 50%;
     transition: background-color 0.2s;
-    z-index: 20; /* ให้อยู่เหนือ header content */
+    z-index: 20;
 }
 
 .close-button:hover {
     background-color: #f0f0f0;
 }
 
-/* Modal Header (Title) */
+/* Modal Header */
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    padding-right: 35px; /* ชดเชยปุ่มปิด */
+    padding-right: 35px;
 }
 
 .modal-header h3 {
@@ -163,17 +132,14 @@
     margin: 0;
 }
 
-/* ------------------------------------- */
-/* 3. Sound Grid & Options */
-/* ------------------------------------- */
-
+/* Sound Grid & Options */
 .sound-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-bottom: 15px;
     padding-top: 10px;
-    flex-grow: 1; /* ให้ Grid ขยายเต็มพื้นที่ */
+    flex-grow: 1;
 }
 
 .sound-option {
@@ -193,7 +159,7 @@
 }
 
 .sound-option.active {
-    background-color: #34d399; /* Emerald 400 */
+    background-color: #34d399;
     color: white;
     box-shadow: 0 2px 5px rgba(52, 211, 153, 0.4);
     transform: translateY(-1px);
@@ -201,8 +167,8 @@
 
 .sound-option.active .sound-icon,
 .sound-option.active .sound-name {
-    filter: none; /* ลบ filter หากมี */
-    color: white; /* ตั้งสีชื่อให้เป็นสีขาว (Icon ยังเป็น Emoji) */
+    filter: none;
+    color: white;
 }
 
 .sound-icon {
@@ -210,27 +176,22 @@
     font-size: 1.2rem;
 }
 
-/* ------------------------------------- */
-/* 4. Volume Control */
-/* ------------------------------------- */
-
+/* Volume Control */
 .volume-control {
     display: flex;
     align-items: center;
     gap: 10px;
     width: 100%;
     
-    /* 💡 ทำให้ Volume Control มี Border ด้านบนเพื่อแยกจาก Grid */
-    padding: 15px 0 15px 0; /* เพิ่ม Padding ด้านบนและล่าง */
+    padding: 15px 0 15px 0;
     border-top: 1px solid #ddd; 
     
-    /* 🛑 ทำให้ Volume Control เป็น Sticky ด้านล่างสุด */
+    /* ทำให้ Volume Control เป็น Sticky ด้านล่างสุด */
     position: sticky;
-    bottom: 0; /* ติดด้านล่าง */
-    background-color: white; /* ป้องกันเนื้อหาด้านบนทับ */
+    bottom: 0;
+    background-color: white;
     z-index: 15;
     
-    /* ชดเชย Padding ด้านข้างของ Modal */
     margin-right: -15px;
     padding-right: 15px;
     margin-left: -15px;
@@ -254,19 +215,19 @@
     opacity: 1;
 }
 
-/* สไตล์ Thumb (วงกลมที่เลื่อนได้) */
+/* สไตล์ Thumb วงกลมที่เลื่อนได้ */
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #34d399; /* Emerald 400 */
+    background: #34d399;
     cursor: pointer;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
-/* สไตล์ Thumb (วงกลมที่เลื่อนได้) สำหรับ Firefox */
+/* สไตล์ Thumb สำหรับ Firefox */
 .volume-slider::-moz-range-thumb {
     width: 16px;
     height: 16px;

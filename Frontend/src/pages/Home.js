@@ -4,16 +4,7 @@ import './Home.css';
 import SettingsButton from '../components/Button/Setting'; 
 import { BookText, Home, Flame } from 'lucide-react'; 
 
-// 💡 HomePage รับ Props ทั้งหมดจาก App.js
-const HomePage = ({
-    currentBackgroundUrl, 
-    handleBackgroundSelect,
-    currentSoundUrl,
-    volume,
-    isPlaying,
-    handleSoundSelect,
-    handleVolumeChange,
-}) => {
+const HomePage = () => {
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
     const [currentTime, setCurrentTime] = useState(''); 
@@ -61,8 +52,6 @@ const HomePage = ({
     }, [navigate]);
 
     return (
-        // 🛑 ลบ style={{ backgroundImage... }} ออกจาก div.home-page-container 
-        // เพราะ App.js ตั้งค่าที่ document.documentElement แล้ว
         <div className="home-page-container">
             {/* Header / Quote */}
             <header className="home-header">
@@ -88,10 +77,8 @@ const HomePage = ({
             
             {/* Footer / Bottom Navigation */}
             <footer className="home-footer" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                
-                {/* Left Side Icons (Modals/Controls) - ถูกย้ายไป App.js แล้ว */}
-                <div className="footer-icons">
-                    {/* ว่างเปล่า */}
+
+                <div className="footer-icons">  
                 </div>
 
                 {/* Right Side Icons (Navigation) */}
