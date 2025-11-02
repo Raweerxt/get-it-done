@@ -5,6 +5,8 @@ import './Signin.css';
 import backgroundImage from '../../assets/bg.png';
 import logoImage from '../../assets/logoGetitdone.png';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 const SigninPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +30,7 @@ const SigninPage = () => {
 
     try {
         // เชื่อมต่อ Backend (สอดคล้องกับ server)
-        const response = await fetch('/api/auth/login', { 
+        const response = await fetch('${API_URL}/api/auth/login', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

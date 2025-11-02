@@ -30,6 +30,8 @@ ChartJS.register(
   Legend
 );
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 const StreakPage = () => {
     const navigate = useNavigate();
 
@@ -79,7 +81,7 @@ const StreakPage = () => {
 
             // ถ้ามี Token ให้ดึงข้อมูลจริง
             try {
-                const response = await fetch('/api/v1/statistics', { 
+                const response = await fetch('${API_URL}/api/v1/statistics', { 
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
