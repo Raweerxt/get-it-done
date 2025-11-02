@@ -81,7 +81,7 @@ const StreakPage = () => {
 
             // ถ้ามี Token ให้ดึงข้อมูลจริง
             try {
-                const response = await fetch('${API_URL}/api/v1/statistics', { 
+                const response = await fetch(`${API_URL}/api/v1/statistics`, { 
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
