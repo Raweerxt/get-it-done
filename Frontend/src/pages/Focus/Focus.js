@@ -48,15 +48,7 @@ const formatSessionDuration = (totalMinutes) => {
 };
 
 
-const FocusPage = ({
-    currentBackgroundUrl, 
-    handleBackgroundSelect,
-    currentSoundUrl,
-    volume,
-    isPlaying,
-    handleSoundSelect,
-    handleVolumeChange,
-}) => {
+const FocusPage = () => {
     const navigate = useNavigate();
     const [task, setTask] = useState('What do you want to focus on?');
     const [isEditingTask, setIsEditingTask] = useState(false);
@@ -67,13 +59,13 @@ const FocusPage = ({
     
     const [isTimeEditing, setIsTimeEditing] = useState(false);
 
-    // --- Durations ---
+    // Durations
     const [breakDuration, setBreakDuration] = useState(() => {
         const storedBreakTime = sessionStorage.getItem('breakTime');
         return getDurationInMinutes(storedBreakTime);
     });
 
-    // --- Timer States ---
+    // Timer States
     const initialFocusTime = calculateTotalSeconds(inputHours, inputMinutes, inputSeconds);
     const [focusTimeLeft, setFocusTimeLeft] = useState(initialFocusTime);
     const [breakTimeLeft, setBreakTimeLeft] = useState(breakDuration * 60);
@@ -92,16 +84,14 @@ const FocusPage = ({
     const secsInputRef = useRef(null);
     const timeWrapperRef = useRef(null); 
 
-    
-    // --- Effects and Callbacks ---
 
     const saveActualFocus = useCallback(async (focusedSeconds) => {
         const token = sessionStorage.getItem('token');
         
-        // 🛑 ไม่ต้องบันทึกถ้าโฟกัส 0 วินาที
+        // ไม่ต้องบันทึกถ้าโฟกัส 0 วินาที
         if (!token || focusedSeconds === 0) { return; }
 
-        // 🛑 ถ้าผู้ใช้ไม่ได้ตั้งชื่อ task ให้ใช้ชื่อ default
+        // ถ้าผู้ใช้ไม่ได้ตั้งชื่อ task ให้ใช้ชื่อ default
         const sessionTask = (task.trim() === '' || task === 'What do you want to focus on?') 
                             ? 'Focus Session' 
                             : task;
@@ -109,7 +99,7 @@ const FocusPage = ({
         try {
             const API_ENDPOINT = '/api/v1/focus-sessions';
             
-            // 🛑 คำนวณนาทีจาก "วินาทีที่โฟกัสจริง"
+            // คำนวณนาทีจาก "วินาทีที่โฟกัสจริง"
             const totalDurationMinutes = focusedSeconds / 60; 
 
             await fetch(API_ENDPOINT, {
@@ -118,28 +108,25 @@ const FocusPage = ({
                 body: JSON.stringify({
                     taskName: sessionTask,
                     durationMinutes: totalDurationMinutes 
-                    // 💡 หมายเหตุ: Backend ของคุณควรบันทึก createdAt (timestamp)
-                    // โดยอัตโนมัติเมื่อได้รับ request นี้
                 })
             });
         } catch (error) {
             console.error("Error saving focus session: ", error);
         }
-    }, [task]); // 🛑 Dependency เหลือแค่ 'task'
+    }, [task]); 
 
 
-    // 💡 NEW: ฟังก์ชันที่ใช้ในการเริ่ม Focus ต่อจาก Break (หรือ Skip Break)
+    // ฟังก์ชันที่ใช้ในการเริ่ม Focus ต่อจาก Break หรือ Skip Break
     const startNextFocusSession = useCallback(() => {
-        // 1. ตรวจสอบและตั้งค่า Break Duration ล่าสุด
+        // ตรวจสอบและตั้งค่า Break Duration ล่าสุด
         const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
         setBreakDuration(latestBreakDuration);
         setBreakTimeLeft(latestBreakDuration * 60); 
 
         actualFocusSecondsRef.current = 0;
-        hasSessionCompletedRef.current = false; //รีเซ็ต Ref
-        //hasBreakCompletedRef.current = false;
+        hasSessionCompletedRef.current = false; 
 
-        // 2. หยุด Break และเริ่ม Focus
+        // หยุด Break และเริ่ม Focus
         setIsBreakActive(false);
         setIsFocusActive(true); 
     }, []); 
@@ -151,7 +138,7 @@ const FocusPage = ({
         if (isFocusActive) {
             interval = setInterval(() => {
                 
-                // 🛑 NEW: เพิ่มวินาทีที่โฟกัสจริงใน Ref
+                // เพิ่มวินาทีที่โฟกัสจริงใน Ref
                 actualFocusSecondsRef.current += 1;
 
                 setFocusTimeLeft(prevTime => {
@@ -163,18 +150,12 @@ const FocusPage = ({
                         }
                         hasSessionCompletedRef.current = true; // Mark as completed
 
-                        // 1. 🛑 Save session (บันทึกเวลาจริงจาก Ref)
+                        // Save session (บันทึกเวลาจริงจาก Ref)
                         saveActualFocus(actualFocusSecondsRef.current);
                         actualFocusSecondsRef.current = 0; // รีเซ็ต Ref
                         
-                        // 2. Alert
+                        // Alert
                         alert("Focus session completed!");
-
-                        // 3. Transition to Break (โค้ดส่วนนี้เหมือนเดิม)
-                        //const latestBreakDuration = getDurationInMinutes(sessionStorage.getItem('breakTime'));
-                        //setBreakDuration(latestBreakDuration); 
-                        //setBreakTimeLeft(latestBreakDuration * 60);
-                        //setIsBreakActive(true); 
                         setIsFocusActive(false); 
 
                         return 0; 
@@ -187,7 +168,7 @@ const FocusPage = ({
         return () => {
             if (interval) clearInterval(interval);
         };
-    // 🛑 อัปเดต Dependencies
+    // อัปเดต Dependencies
     }, [isFocusActive, saveActualFocus]);
 
 
@@ -200,18 +181,16 @@ const FocusPage = ({
                     if (prevTime <= 1) {
                         clearInterval(interval);
 
-                        // 🛑 FIX: ตรวจสอบ Ref เพื่อป้องกันการทำงานซ้ำใน Strict Mode
+                        //  ตรวจสอบ Ref เพื่อป้องกันการทำงานซ้ำใน Strict Mode
                         if (hasBreakCompletedRef.current) {
                             return 0;
                         }
                         hasBreakCompletedRef.current = true; // Mark as completed
                         
-                        // 1. Alert (แจ้ง Break หมด)
+                        // Alert (แจ้ง Break หมด)
                         alert("Break's over!");
                         
-                        // 2. 🛑 FIX: เริ่ม Focus ต่อโดยอัตโนมัติ
-                        // ต้องรีเซ็ต focusTimeLeft กลับไปค่าเริ่มต้นก่อนที่จะเริ่ม
-                        // โดยเรียกใช้ startNextFocusSession
+                        // เริ่ม Focus ต่อโดยอัตโนมัติ ต้องรีเซ็ต focusTimeLeft กลับไปค่าเริ่มต้นก่อนที่จะเริ่ม
                         startNextFocusSession(); 
                         
                         // Focus Time Left จะถูกรีเซ็ตใน startNextFocusSession
@@ -230,16 +209,13 @@ const FocusPage = ({
 
     // Effect สำหรับอัปเดต Focus Time Left เมื่อ H/M/S ถูกแก้ไข (ขณะที่นาฬิกาหยุด)
     useEffect(() => {
-        // 🛑 FIX: อัปเดต FocusTimeLeft และ BreakTimeLeft เฉพาะเมื่ออยู่ในสถานะ Idle เท่านั้น 
-        // (เพื่อให้การตั้งค่าเวลาใช้งานได้เมื่อไม่ได้กำลังจับเวลาอยู่)
+        // อัปเดต FocusTimeLeft และ BreakTimeLeft เฉพาะเมื่ออยู่ในสถานะ Idle เท่านั้น (เพื่อให้การตั้งค่าเวลาใช้งานได้เมื่อไม่ได้กำลังจับเวลาอยู่)
         if (!isFocusActive && !isBreakActive) {
             setFocusTimeLeft(calculateTotalSeconds(inputHours, inputMinutes, inputSeconds));
             setBreakTimeLeft(breakDuration * 60); 
         }
     }, [inputHours, inputMinutes, inputSeconds, breakDuration, isFocusActive, isBreakActive]);
 
-    
-    // ... (Effects อื่นๆ เหมือนเดิม) ...
     // Effect สำหรับ Focus Task Input
     useEffect(() => {
         if (isEditingTask) {
@@ -269,7 +245,7 @@ const FocusPage = ({
         };
     }, [isTimeEditing]); 
 
-    // --- Time Input Handlers ---
+    // Time Input Handlers
     const handleTimeInputChange = (e, unit) => {
         let stringValue = e.target.value.slice(0, 2); 
         let value = parseInt(stringValue, 10);
@@ -321,16 +297,15 @@ const FocusPage = ({
     };
 
 
-    // --- Button Handlers ---
+    // Button Handlers 
  const handleStartFocus = () => {
         if (task.trim() === '' || task === 'What do you want to focus on?') {
             setTask('Focus Session');
         }
-        // ... (โค้ดเช็ค totalSeconds) ...
 
-        // 🛑 NEW: รีเซ็ตตัวนับวินาทีจริง
+        // รีเซ็ตตัวนับวินาทีจริง
         actualFocusSecondsRef.current = 0; 
-        hasSessionCompletedRef.current = false; // รีเซ็ต Ref
+        hasSessionCompletedRef.current = false;
         hasBreakCompletedRef.current = false;
 
         setIsEditingTask(false);
@@ -340,10 +315,10 @@ const FocusPage = ({
     };
 
     const handleTakeBreak = () => {
-        // หากกด "Break" ขณะอยู่ใน Focus Session
+        // หากกด Break ขณะอยู่ใน Focus Session
         if (actualFocusSecondsRef.current > 0) {
             saveActualFocus(actualFocusSecondsRef.current);
-            actualFocusSecondsRef.current = 0; // รีเซ็ต Ref
+            actualFocusSecondsRef.current = 0; 
         }
 
         setIsFocusActive(false);
@@ -358,20 +333,20 @@ const FocusPage = ({
     };
 
     const handleSkipBreak = () => {
-        // 🛑 FIX: หากกด "Skip Break" ให้เริ่ม Focus ต่อทันที
+        // หากกด Skip Break ให้เริ่ม Focus ต่อทันที
         startNextFocusSession(); 
     };
     
    const handleSkipFocus = () => {
-        // 🛑 NEW: บันทึกเวลาที่สะสมไว้ก่อนจะ Skip
+        // บันทึกเวลาที่สะสมไว้ก่อนจะ Skip
         if (actualFocusSecondsRef.current > 0) {
             saveActualFocus(actualFocusSecondsRef.current);
             actualFocusSecondsRef.current = 0; // รีเซ็ต Ref
         }
 
-        // 🛑 FIX: หากกด "Skip Focus" ให้รีเซ็ตกลับไปหน้า Start (Idle State)
+        // หากกด Skip Focus ให้รีเซ็ตกลับไปหน้า Start (Idle State)
         setIsFocusActive(false);
-        // focusTimeLeft จะถูกรีเซ็ตอัตโนมัติโดย useEffect ด้านบน (บรรทัด 240)
+        // focusTimeLeft จะถูกรีเซ็ตอัตโนมัติโดย useEffect ด้านบน 
     };
 
 
@@ -379,11 +354,6 @@ const FocusPage = ({
         e.preventDefault();
         if(task.trim() !== '') setIsEditingTask(false);
     };
-
-    const handleNavClick = (path) => {
-        navigate(path);
-    };
-
 
     // กำหนดค่าสำหรับแสดงผล
     const timeFormatted = formatTime(focusTimeLeft);

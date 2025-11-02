@@ -9,27 +9,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 1. โมเดล User (แทน User.js)
-// เราจะเก็บ username และ password ที่เข้ารหัสแล้ว
+// โมเดล User เก็บ username และ password ที่เข้ารหัสแล้ว
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
   
-  // ความสัมพันธ์: User 1 คน มีได้หลาย Session
+  // User 1 คน มีได้หลาย Session
   sessions  FocusSession[]
 
   createdAt DateTime @default(now())
 }
 
-// 2. โมเดล FocusSession (แทน Session.js)
-// นี่คือตารางที่จะเก็บข้อมูล "การโฟกัส" ทั้งหมด
+// โมเดล FocusSession ตารางที่จะเก็บข้อมูลการโฟกัสทั้งหมด
 model FocusSession {
   id        Int      @id @default(autoincrement())
   taskName  String   @default("Focus Session")
   durationMinutes Float  // เก็บเป็นนาที (Float เผื่อมี 1.5 นาที)
   
-  // ความสัมพันธ์: Session นี้ เป็นของ User คนไหน
+  // Session นี้ เป็นของ User คนไหน
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
 

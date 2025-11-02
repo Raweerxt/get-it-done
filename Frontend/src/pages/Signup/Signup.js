@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Signup.css'; // ใช้ CSS เดียวกับ Signin เพื่อความสอดคล้องของ Layout
+import './Signup.css';
 
-// 🛑 แก้ไข Path รูปภาพ: สมมติว่า assets อยู่เหนือ Folder ของ Signup.js
 import backgroundImage from '../../assets/bg.png';
 import logoImage from '../../assets/logoGetitdone.png';
 
@@ -33,7 +32,7 @@ const SignupPage = () => {
     }
 
     try {
-        // 🛑 เชื่อมต่อ Backend ที่ Port 5000 (สอดคล้องกับ server)
+        // เชื่อมต่อ Backend (สอดคล้องกับ server)
         const response = await fetch('/api/auth/signup', {
             method: 'POST',
             headers: {
@@ -60,7 +59,6 @@ const SignupPage = () => {
     }
   };
 
-  // 🛑 UI Component: ใช้ Layout 2 Panel เดิม
   return (
     <div className="login-page">
       {/* Left Panel: Background */}

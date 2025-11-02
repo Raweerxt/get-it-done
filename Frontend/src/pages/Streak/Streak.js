@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import './Streak.css'; 
 import SettingsButton from '../../components/Button/Setting'; 
 import fireStreak from '../../assets/fireStreak.png';
-// นำเข้า Icon ที่จำเป็น (ลบ PaintBucket ออก)
 import { BookText, Home, Flame } from 'lucide-react'; 
 
 import { Line } from 'react-chartjs-2'; 
 
-// 2. นำเข้าสิ่งที่ Chart.js ต้องใช้ (สำคัญมาก)
+// นำเข้าสิ่งที่ Chart.js ต้องใช้
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,7 +19,7 @@ import {
   Legend,
 } from 'chart.js';
 
-// 3. ลงทะเบียน Component ที่จะใช้ (สำคัญมาก)
+// Component ที่จะใช้
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -31,20 +30,10 @@ ChartJS.register(
   Legend
 );
 
-const StreakPage = ({
-    currentBackgroundUrl, 
-    handleBackgroundSelect,
-    currentSoundUrl,
-    volume,
-    isPlaying,
-    handleSoundSelect,
-    handleVolumeChange,
-}) => {
+const StreakPage = () => {
     const navigate = useNavigate();
-    const [userName, setUserName] = useState('');
-    const [currentTime, setCurrentTime] = useState(''); 
 
-    // --- STATE & EFFECT สำหรับสถิติ ---
+    // STATE & EFFECT สำหรับสถิติ
     const [chartData, setChartData] = useState([]);
     const [totalTimeSpent, setTotalTimeSpent] = useState(0);
     const [streak, setStreak] = useState(0);
@@ -59,22 +48,20 @@ const StreakPage = ({
             }
 
             if (!token) {
-                // 🛑 ใช้ข้อมูลจำลอง (Mock Data) ถ้าไม่มี Token
-                // เพื่อให้คุณเห็นหน้าจอตอนยังไม่ได้เชื่อมต่อ Backend
                 console.warn("No token found. Using mock data for stats.");
                 
                 // ข้อมูลจำลอง
                 const mockData = {
-                   totalTimeAllTimeMinutes: 1200, // 20 hours
-                   currentStreak: 6,
+                   totalTimeAllTimeMinutes: 0,
+                   currentStreak: 0,
                    last7Days: [ 
-                     { day: 'Sun', totalMinutes: 180 }, // 3h
-                     { day: 'Mon', totalMinutes: 240 }, // 4h
-                     { day: 'Tue', totalMinutes: 120 }, // 2h
-                     { day: 'Wed', totalMinutes: 60 },  // 1h
-                     { day: 'Thu', totalMinutes: 120 }, // 2h
-                     { day: 'Fri', totalMinutes: 0 },   // 0h
-                     { day: 'Sat', totalMinutes: 300 }  // 5h
+                     { day: 'Sun', totalMinutes: 0 },
+                     { day: 'Mon', totalMinutes: 0 },
+                     { day: 'Tue', totalMinutes: 0 },
+                     { day: 'Wed', totalMinutes: 0 },
+                     { day: 'Thu', totalMinutes: 0 },
+                     { day: 'Fri', totalMinutes: 0 },
+                     { day: 'Sat', totalMinutes: 0 }
                    ]
                 };
                 
@@ -87,10 +74,10 @@ const StreakPage = ({
                 setTotalTimeSpent(Math.floor(mockData.totalTimeAllTimeMinutes / 60));
                 setStreak(mockData.currentStreak);
                 setIsLoading(false);
-                return; // จบการทำงาน
+                return;
             }
 
-            // --- ถ้ามี Token ให้ดึงข้อมูลจริง ---
+            // ถ้ามี Token ให้ดึงข้อมูลจริง
             try {
                 const response = await fetch('/api/v1/statistics', { 
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -119,41 +106,36 @@ const StreakPage = ({
         };
 
         fetchStatistics();
-    }, []); // [] ให้ทำงานแค่ครั้งเดียวตอนเปิดหน้า
-    // -------------------------------------------
-
-    // ✅ 1. แปลง Data ให้ Chart.js ใช้งานได้
-    // (ใช้ React.useMemo เพื่อไม่ให้มันคำนวณใหม่ทุกครั้งที่ re-render)
+    }, []);
+    //  แปลง Data ให้ Chart.js ใช้งานได้
+    // ใช้ React.useMemo เพื่อไม่ให้มันคำนวณใหม่ทุกครั้งที่ re-render
     const chartJsData = React.useMemo(() => {
-        // chartData ของเราคือ: [{day: 'Sun', h: 3}, {day: 'Mon', h: 4}, ...]
         
-        // Chart.js ต้องการ:
-        const labels = chartData.map(item => item.day);  // ['Sun', 'Mon', ...]
-        const data = chartData.map(item => item.h);      // [3, 4, ...]
+        const labels = chartData.map(item => item.day);  // วัน
+        const data = chartData.map(item => item.h);      // ชั่วโมง
 
         return {
             labels: labels,
             datasets: [{
-                label: 'Time spent', // ชื่อที่แสดงใน tooltip
+                label: 'Time spent',
                 data: data,
-                borderColor: '#8A2BE2', // สีม่วง (สีเดิมของคุณ)
-                backgroundColor: 'rgba(138, 43, 226, 0.2)', // สีพื้นหลัง (เพิ่มให้สวย)
+                borderColor: '#8A2BE2',
+                backgroundColor: 'rgba(138, 43, 226, 0.2)',
                 fill: true,
-                tension: 0.3 // ทำให้เส้นโค้งมน (เหมือน 'monotone')
+                tension: 0.3
             }]
         };
     }, [chartData]); // คำนวณใหม่เมื่อ chartData เปลี่ยน
 
-    // ✅ 2. ตั้งค่า Option ของกราฟ
+    // ตั้งค่า Option ของกราฟ
     const chartJsOptions = {
-        responsive: true, // ทำให้กราฟย่อขยายตามขนาด
-        maintainAspectRatio: false, // สำคัญมาก! เพื่อให้เรากำหนดความสูงเองได้
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: false // ซ่อนปุ่ม Legend ด้านบน (กราฟเดิมไม่มี)
+                display: false
             },
             tooltip: {
-                // ปรับแต่ง tooltip ให้เหมือนของเดิม
                 callbacks: {
                     label: function(context) {
                         return `Time spent: ${context.parsed.y} hours`;
@@ -171,10 +153,6 @@ const StreakPage = ({
                 }
             }
         }
-    };
-
-    const handleNavClick = (path) => {
-        console.log(`Navigating to ${path}`);
     };
 
     return (
@@ -199,19 +177,15 @@ const StreakPage = ({
                 ) : error ? (
                     <div className="stats-error">Error: {error}</div>
                 ) : (
-                    // (A) กล่องเนื้อหาหลัก (พื้นหลังเบลอ)
                     <div className="stats-content-box">
                         <h1 className="stats-title">Statistics</h1>
                         
-                        {/* (B) ส่วนของกราฟ */}
+                        {/* กราฟ */}
                         <div className="stats-chart-wrapper" style={{ height: '300px' }}>
-                            {/* Chart.js ไม่ต้องใช้ ResponsiveContainer
-                                แต่เราต้องกำหนดความสูงให้ div แม่ของมันแทน (300px)
-                            */}
                             <Line options={chartJsOptions} data={chartJsData} />
                         </div>
 
-                        {/* (C) ส่วนสรุปด้านล่าง */}
+                        {/* ส่วนสรุปด้านล่าง */}
                         <div className="stats-summary-wrapper">
                             
                             <div className="stats-card total-time-card">
@@ -229,7 +203,7 @@ const StreakPage = ({
                             </div>
 
                         </div>
-                    </div> // (ปิด stats-content-box)
+                    </div>
                 )} 
                 
             </main>

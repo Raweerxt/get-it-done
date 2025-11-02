@@ -1,11 +1,8 @@
-// fileName: Sounds.js (Corrected and Updated)
-
 import React from 'react'; 
 import './Sounds.css';
-// 🛑 นำเข้า Icon สำหรับ Play/Pause เพิ่มเติม
 import { X, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 
-// 🛑 Import ไฟล์เสียงทั้งหมด (ตรวจสอบพาธ: ../../assets/sound/)
+// Import ไฟล์เสียง
 import CafeSound from '../../assets/sound/Cafe.mp3';
 import ForestSound from '../../assets/sound/EnchantedForest.mp3'; 
 import FireSound from '../../assets/sound/Fireplace.mp3';
@@ -13,7 +10,7 @@ import OceanSound from '../../assets/sound/Ocean.mp3';
 import RainSound from '../../assets/sound/Rain.mp3';
 import RiverSound from '../../assets/sound/River.mp3'; 
 
-// ข้อมูลเสียงบรรยากาศ - ต้อง Export ให้ App.js เข้าถึงได้
+// เสียงบรรยากาศ
 export const soundOptions = [
     { name: 'Rain', url: RainSound, icon: '🌧️' },
     { name: 'Ocean', url: OceanSound, icon: '🌊' },
@@ -23,19 +20,17 @@ export const soundOptions = [
     { name: 'Café', url: CafeSound, icon: '☕' },
 ];
 
-// 💡 AmbientSoundSelector รับ Props ควบคุมทั้งหมดจาก App.js
 const AmbientSoundSelector = ({ 
     isOpen, 
     onToggle, 
     currentSoundUrl, 
-    volume,    
-    // 🛑 เพิ่ม isPlaying prop เข้ามา
+    volume,
     isPlaying,      
     handleSelect,    
     handleVolumeChange 
 }) => {
     
-    // 💡 Logic สำหรับการกด Play/Pause ที่ไม่ใช่การเลือกเสียงใหม่
+    // Logic สำหรับการกด Play/Pause ที่ไม่ใช่การเลือกเสียงใหม่
     const togglePlayPause = () => {
         const currentSoundOption = soundOptions.find(s => s.url === currentSoundUrl);
         // ถ้ามีเสียงปัจจุบัน ให้ใช้ handleSelect เพื่อสลับสถานะ Play/Pause ใน App.js
@@ -50,10 +45,9 @@ const AmbientSoundSelector = ({
         <React.Fragment>
             
             {isOpen && (
-                <div className="sound-selector-modal-wrapper-fixed"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
-                    <div className="sound-selector-modal"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
+                <div className="sound-selector-modal-wrapper-fixed"> 
+                    <div className="sound-selector-modal"> 
                         
-                        {/* Header/Title */}
                         <div className="modal-header">
                             <h3>Ambient Sounds</h3>
                             <button className="close-button" onClick={onToggle} title="Close">
@@ -61,7 +55,7 @@ const AmbientSoundSelector = ({
                             </button>
                         </div>
                         
-                        {/* 🛑 ปุ่มควบคุม Play/Pause (เพิ่มมาเพื่อ UX) */}
+                        {/* ปุ่มควบคุม Play/Pause */}
                         <div className="sound-controls">
                             <button 
                                 className="ambient-play-pause-button" 
@@ -78,7 +72,7 @@ const AmbientSoundSelector = ({
                         </div>
 
                         {/* Sound Grid */}
-                        <div className="sound-grid"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
+                        <div className="sound-grid">
                             {soundOptions.map((sound) => (
                                 <div 
                                     key={sound.name}
@@ -95,7 +89,7 @@ const AmbientSoundSelector = ({
                         </div>
                         
                         {/* Volume Control */}
-                        <div className="volume-control"> {/* 🛑 ใช้คลาสตาม Sounds.css */}
+                        <div className="volume-control">
                             <VolumeX size={20} color="#333" />
                             
                             <input 
